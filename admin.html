@@ -5,57 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ponto Zero - Admin</title>
     <style>
-        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --danger: #f85149; }
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --danger: #f85149; --success: #238636; }
         body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; min-height: 100vh; }
         .sidebar { width: 220px; background: #0d1117; border-right: 1px solid #30363d; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
         .main { flex: 1; padding: 40px; }
         .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #30363d; margin-bottom: 20px; }
-        input, textarea { width: 100%; padding: 10px; margin-top: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box; }
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; }
-        .btn-post { background: var(--primary); color: black; }
+        input, textarea { width: 100%; padding: 12px; margin-top: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box; }
+        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn-post { background: var(--primary); color: black; width: 100%; }
+        .news-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #30363d; }
+        .btn-del { background: var(--danger); color: white; padding: 5px 10px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
     <aside class="sidebar">
         <h3>THE NULL POINT</h3>
         <div onclick="location.href='home.html'" style="cursor:pointer">🏠 Ver Site</div>
+        <div onclick="location.href='perfil.html'" style="cursor:pointer">👤 Meu Perfil</div>
         <div onclick="localStorage.removeItem('usuarioLogado'); location.href='index.html'" style="color:var(--danger); cursor:pointer; margin-top:auto">🚪 Sair</div>
     </aside>
     <main class="main">
-        <h1>Painel do Criador</h1>
+        <h1>Painel do Criador <span style="font-size: 1rem; background: #ffcf40; color: black; padding: 2px 8px; border-radius: 10px;">OWNER</span></h1>
         
         <div class="card">
-            <h3>📢 Publicar Nova Notícia</h3>
-            <input type="text" id="newsTitle" placeholder="Título da Notícia">
-            <textarea id="newsContent" rows="4" placeholder="Conteúdo da notícia..."></textarea>
-            <button class="btn btn-post" onclick="postarNoticia()">PUBLICAR NO FEED</button>
+            <h3 id="formTitle">📢 Publicar Notícia</h3>
+            <input type="text" id="newsTitle" placeholder="Título">
+            <textarea id="newsContent" rows="4" placeholder="Conteúdo..."></textarea>
+            <input type="hidden" id="editIndex" value="-1">
+            <button class="btn btn-post" id="btnAction" onclick="salvarNoticia()">PUBLICAR NO FEED</button>
         </div>
 
         <div class="card">
-            <h3>⚙️ Controle de XP</h3>
-            <input type="number" id="xpInput" value="1">
-            <button class="btn" style="background:#30363d; color:white;" onclick="document.getElementById('lvlText').innerText = document.getElementById('xpInput').value">APLICAR</button>
-            <p>Nível: <span id="lvlText">1</span></p>
+            <h3>📂 Gerenciar Postagens</h3>
+            <div id="listaAdmin"></div>
         </div>
     </main>
 
     <script>
-        function postarNoticia() {
+        function salvarNoticia() {
             const titulo = document.getElementById('newsTitle').value;
             const texto = document.getElementById('newsContent').value;
-            if(!titulo || !texto) return alert("Escreva algo!");
+            const index = document.getElementById('editIndex').value;
+            if(!titulo || !texto) return alert("Preencha tudo!");
 
-            const novaNoticia = { titulo, texto, data: new Date().toLocaleDateString() };
-            
-            // Pega as notícias antigas ou cria uma lista vazia
             let lista = JSON.parse(localStorage.getItem('noticias')) || [];
-            lista.unshift(novaNoticia); // Adiciona no topo
-            localStorage.setItem('noticias', JSON.stringify(lista));
+            
+            if(index === "-1") {
+                lista.unshift({ titulo, texto, data: new Date().toLocaleDateString() });
+            } else {
+                lista[index] = { titulo, texto, data: lista[index].data };
+                resetForm();
+            }
 
-            alert("Notícia enviada ao Universo!");
+            localStorage.setItem('noticias', JSON.stringify(lista));
             document.getElementById('newsTitle').value = "";
             document.getElementById('newsContent').value = "";
+            carregarLista();
         }
+
+        function carregarLista() {
+            const container = document.getElementById('listaAdmin');
+            const lista = JSON.parse(localStorage.getItem('noticias')) || [];
+            container.innerHTML = lista.map((n, i) => `
+                <div class="news-item">
+                    <span>${n.titulo.substring(0, 20)}...</span>
+                    <div>
+                        <button class="btn" style="background:#30363d; color:white;" onclick="prepararEdicao(${i})">Editar</button>
+                        <button class="btn btn-del" onclick="excluir(${i})">X</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function excluir(i) {
+            if(confirm("Deseja apagar essa notícia?")) {
+                let lista = JSON.parse(localStorage.getItem('noticias'));
+                lista.splice(i, 1);
+                localStorage.setItem('noticias', JSON.stringify(lista));
+                carregarLista();
+            }
+        }
+
+        function prepararEdicao(i) {
+            let lista = JSON.parse(localStorage.getItem('noticias'));
+            document.getElementById('newsTitle').value = lista[i].titulo;
+            document.getElementById('newsContent').value = lista[i].texto;
+            document.getElementById('editIndex').value = i;
+            document.getElementById('formTitle').innerText = "✏️ Editando Notícia";
+            document.getElementById('btnAction').innerText = "SALVAR ALTERAÇÕES";
+            document.getElementById('btnAction').style.background = "#ffcf40";
+        }
+
+        function resetForm() {
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('formTitle').innerText = "📢 Publicar Notícia";
+            document.getElementById('btnAction').innerText = "PUBLICAR NO FEED";
+            document.getElementById('btnAction').style.background = "var(--primary)";
+        }
+
+        carregarLista();
     </script>
 </body>
 </html>
