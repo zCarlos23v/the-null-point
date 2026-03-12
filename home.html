@@ -5,68 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Null Point - Home</title>
     <style>
-        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --gold: #ffcf40; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: #0d1117; border-bottom: 1px solid #30363d; position: sticky; top:0; z-index:100; }
-        .main-layout { display: grid; grid-template-columns: 1fr 300px; max-width: 1200px; margin: 20px auto; gap: 20px; padding: 0 20px; }
-        .search-area { margin-bottom: 20px; }
-        #searchInput { width: 100%; padding: 12px; background: #161b22; border: 1px solid #30363d; border-radius: 10px; color: white; }
-        .news-card { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #30363d; margin-bottom: 20px; }
-        .guild-sidebar { background: #0d1117; padding: 20px; border-radius: 15px; border: 1px solid var(--gold); height: fit-content; }
-        .badge-owner { background: var(--gold); color: black; padding: 2px 8px; border-radius: 5px; font-weight: bold; font-size: 0.7rem; }
-        .user-link { cursor: pointer; background: #21262d; padding: 8px 15px; border-radius: 20px; }
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --sidebar: #0d1117; --gold: #ffcf40; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* BARRA LATERAL (O desenho que você fez) */
+        .sidebar { width: 250px; background: var(--sidebar); border-right: 1px solid #30363d; display: flex; flex-direction: column; padding: 20px; gap: 10px; }
+        .logo { font-weight: 900; font-size: 1.2rem; margin-bottom: 30px; text-align: center; color: var(--primary); }
+        .nav-box { background: #21262d; padding: 15px; border-radius: 12px; cursor: pointer; border: 1px solid transparent; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        .nav-box:hover { border-color: var(--primary); background: #30363d; }
+        .nav-box.active { border-color: var(--primary); background: rgba(0, 212, 255, 0.1); }
+
+        /* CONTEÚDO PRINCIPAL */
+        .main-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .header { display: flex; justify-content: flex-end; padding-bottom: 20px; }
+        .user-badge { cursor: pointer; background: var(--sidebar); padding: 10px 20px; border-radius: 30px; border: 1px solid #30363d; font-weight: bold; }
+
+        /* GRID DE NOTÍCIAS E GUILDA */
+        .layout-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; max-width: 1100px; margin: 0 auto; }
+        .search-bar { width: 100%; padding: 15px; background: var(--card); border: 1px solid #30363d; border-radius: 12px; color: white; margin-bottom: 20px; box-sizing: border-box; }
+        
+        .news-card { background: var(--card); border-radius: 15px; border: 1px solid #30363d; margin-bottom: 20px; overflow: hidden; }
+        .news-img { width: 100%; height: 200px; object-fit: cover; background: #000; display: none; } /* Escondido se não tiver foto */
+        .news-body { padding: 20px; }
+        .news-card h2 { color: var(--primary); margin: 5px 0; }
+        .pinned { border-color: var(--gold); position: relative; }
+        .pinned::before { content: "📌 FIXADO"; position: absolute; top: 10px; right: 10px; color: var(--gold); font-size: 0.7rem; font-weight: bold; }
+
+        .guild-card { background: var(--sidebar); padding: 20px; border-radius: 15px; border: 1px solid var(--gold); height: fit-content; }
+        .btn-entrar { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--primary); color: var(--primary); border-radius: 8px; cursor: not-allowed; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div style="font-weight:900;">THE NULL POINT</div>
-        <div class="user-link" onclick="location.href='perfil.html'">
-            <span id="nomeUser">...</span> 👤
+
+    <aside class="sidebar">
+        <div class="logo">THE NULL POINT</div>
+        <div class="nav-box active" onclick="location.href='home.html'">🏠 Feed Global</div>
+        <div class="nav-box" onclick="location.href='perfil.html'">👤 Meu Perfil</div>
+        <div class="nav-box" onclick="alert('Em breve!')">🛡️ Guildas</div>
+        <div class="nav-box" onclick="alert('Ranking em 1 min...')">📈 Top Ranking</div>
+        <div class="nav-box" onclick="alert('Configurações')">⚙️ Ajustes</div>
+        <div class="nav-box" style="margin-top: auto; color: #f85149;" onclick="localStorage.clear(); location.href='index.html'">🚪 Sair</div>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="user-badge" onclick="location.href='perfil.html'">
+                <span id="txtUser">...</span> 👤
+            </div>
         </div>
-    </nav>
 
-    <div class="main-layout">
-        <section>
-            <div class="search-area">
-                <input type="text" id="searchInput" placeholder="🔍 Pesquisar notícia..." onkeyup="exibir(this.value)">
-            </div>
-            <div id="feedNoticias"></div>
-        </section>
+        <div class="layout-grid">
+            <section>
+                <input type="text" class="search-bar" placeholder="🔍 Pesquisar no Ponto Zero..." onkeyup="renderizar(this.value)">
+                <div id="feed"></div>
+            </section>
 
-        <aside>
-            <div class="guild-sidebar">
-                <h3 style="color: var(--gold); margin-top:0;">🛡️ GUILDA OFICIAL</h3>
-                <p><b>Nome:</b> The Originals</p>
-                <p><b>Líder:</b> Carlos <span class="badge-owner">OWNER</span></p>
-                <hr style="border: 0.5px solid #30363d;">
-                <p style="font-size: 0.9rem; color: #8b949e;">Status: Recrutamento Fechado</p>
-                <button style="width:100%; padding:10px; background:transparent; border: 1px solid var(--primary); color: var(--primary); border-radius:8px; cursor:not-allowed;">PEDIR PARA ENTRAR</button>
-            </div>
-        </aside>
-    </div>
+            <aside>
+                <div class="guild-card">
+                    <h3 style="color: var(--gold); margin-top:0;">🛡️ GUILDA OFICIAL</h3>
+                    <p><b>Nome:</b> The Originals</p>
+                    <p><b>Líder:</b> Carlos <span style="font-size: 0.7rem; background: var(--gold); color: black; padding: 2px 5px; border-radius: 4px;">OWNER</span></p>
+                    <hr style="border: 0.5px solid #30363d;">
+                    <p style="font-size: 0.8rem; color: #8b949e;">Status: Recrutamento Fechado</p>
+                    <button class="btn-entrar">PEDIR PARA ENTRAR</button>
+                </div>
+            </aside>
+        </div>
+    </main>
 
     <script>
-        document.getElementById('nomeUser').innerText = "Olá, " + (localStorage.getItem('usuarioLogado') || 'Viajante');
+        document.getElementById('txtUser').innerText = "Olá, " + (localStorage.getItem('usuarioLogado') || 'Viajante');
 
-        function exibir(filtro = "") {
-            const feed = document.getElementById('feedNoticias');
+        function renderizar(filtro = "") {
+            const feed = document.getElementById('feed');
             const lista = JSON.parse(localStorage.getItem('noticias')) || [];
+            
+            // Filtro e Ordenação (Fixados primeiro)
             const filtradas = lista.filter(n => n.titulo.toLowerCase().includes(filtro.toLowerCase()));
 
             if(filtradas.length === 0) {
-                feed.innerHTML = "<p style='color:#8b949e;'>Nenhuma notícia encontrada.</p>";
+                feed.innerHTML = "<p style='text-align:center; color:#8b949e; margin-top:50px;'>O vácuo está silencioso... (Nenhuma notícia)</p>";
                 return;
             }
 
             feed.innerHTML = filtradas.map(n => `
-                <div class="news-card">
-                    <small style="color:#8b949e;">${n.data}</small>
-                    <h2 style="color:var(--primary); margin:10px 0;">${n.titulo}</h2>
-                    <p>${n.texto}</p>
+                <div class="news-card ${n.fixada ? 'pinned' : ''}">
+                    ${n.imagem ? `<img src="${n.imagem}" class="news-img" style="display:block">` : ''}
+                    <div class="news-body">
+                        <small style="color:#8b949e;">${n.data}</small>
+                        <h2>${n.titulo}</h2>
+                        <p>${n.texto}</p>
+                    </div>
                 </div>
             `).join('');
         }
-        exibir();
+        renderizar();
     </script>
 </body>
 </html>
