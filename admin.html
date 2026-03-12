@@ -5,80 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ponto Zero - Admin</title>
     <style>
-        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --danger: #f85149; --success: #238636; }
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --danger: #f85149; --gold: #ffcf40; }
         body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; min-height: 100vh; }
         .sidebar { width: 220px; background: #0d1117; border-right: 1px solid #30363d; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .main { flex: 1; padding: 40px; }
-        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #30363d; margin-bottom: 20px; }
+        .main { flex: 1; padding: 40px; overflow-y: auto; }
+        .card { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #30363d; margin-bottom: 25px; }
         input, textarea { width: 100%; padding: 12px; margin-top: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box; }
         .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .btn-post { background: var(--primary); color: black; width: 100%; }
-        .news-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #30363d; }
-        .btn-del { background: var(--danger); color: white; padding: 5px 10px; font-size: 0.8rem; }
+        .btn-post { background: var(--primary); color: black; width: 100%; font-size: 1rem; }
+        .btn-post:hover { opacity: 0.8; }
+        
+        .news-manage-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px; border-bottom: 1px solid #30363d; background: rgba(255,255,255,0.02);
+            margin-bottom: 5px; border-radius: 8px;
+        }
+        .controls { display: flex; gap: 8px; }
+        .btn-small { padding: 6px 12px; font-size: 0.8rem; }
+        .is-pinned { border-left: 4px solid var(--gold); }
     </style>
 </head>
 <body>
     <aside class="sidebar">
-        <h3>THE NULL POINT</h3>
+        <h3 style="color:var(--primary)">THE NULL POINT</h3>
         <div onclick="location.href='home.html'" style="cursor:pointer">🏠 Ver Site</div>
         <div onclick="location.href='perfil.html'" style="cursor:pointer">👤 Meu Perfil</div>
-        <div onclick="localStorage.removeItem('usuarioLogado'); location.href='index.html'" style="color:var(--danger); cursor:pointer; margin-top:auto">🚪 Sair</div>
+        <div onclick="localStorage.clear(); location.href='index.html'" style="color:var(--danger); cursor:pointer; margin-top:auto">🚪 Sair do Sistema</div>
     </aside>
+
     <main class="main">
-        <h1>Painel do Criador <span style="font-size: 1rem; background: #ffcf40; color: black; padding: 2px 8px; border-radius: 10px;">OWNER</span></h1>
+        <h1>Painel do Criador 👑</h1>
         
         <div class="card">
-            <h3 id="formTitle">📢 Publicar Notícia</h3>
-            <input type="text" id="newsTitle" placeholder="Título">
-            <textarea id="newsContent" rows="4" placeholder="Conteúdo..."></textarea>
+            <h3 id="formTitle">📢 Nova Transmissão</h3>
+            <input type="text" id="newsTitle" placeholder="Título impactante...">
+            <input type="text" id="newsImg" placeholder="Link da Imagem (URL)">
+            <textarea id="newsContent" rows="5" placeholder="Conteúdo da notícia..."></textarea>
             <input type="hidden" id="editIndex" value="-1">
-            <button class="btn btn-post" id="btnAction" onclick="salvarNoticia()">PUBLICAR NO FEED</button>
+            <button class="btn btn-post" id="btnAction" onclick="salvar()">PUBLICAR NO FEED GLOBAL</button>
         </div>
 
         <div class="card">
-            <h3>📂 Gerenciar Postagens</h3>
+            <h3>📂 Gerenciar Universo (Notícias)</h3>
             <div id="listaAdmin"></div>
         </div>
     </main>
 
     <script>
-        function salvarNoticia() {
+        function salvar() {
             const titulo = document.getElementById('newsTitle').value;
+            const imagem = document.getElementById('newsImg').value;
             const texto = document.getElementById('newsContent').value;
             const index = document.getElementById('editIndex').value;
-            if(!titulo || !texto) return alert("Preencha tudo!");
+
+            if(!titulo || !texto) return alert("O título e o texto são obrigatórios!");
 
             let lista = JSON.parse(localStorage.getItem('noticias')) || [];
             
+            const noticiaDados = { 
+                titulo, 
+                texto, 
+                imagem, 
+                data: new Date().toLocaleDateString(),
+                fixada: index !== "-1" ? lista[index].fixada : false 
+            };
+
             if(index === "-1") {
-                lista.unshift({ titulo, texto, data: new Date().toLocaleDateString() });
+                lista.unshift(noticiaDados);
             } else {
-                lista[index] = { titulo, texto, data: lista[index].data };
+                lista[index] = noticiaDados;
                 resetForm();
             }
 
             localStorage.setItem('noticias', JSON.stringify(lista));
-            document.getElementById('newsTitle').value = "";
-            document.getElementById('newsContent').value = "";
+            limparCampos();
             carregarLista();
         }
 
         function carregarLista() {
             const container = document.getElementById('listaAdmin');
             const lista = JSON.parse(localStorage.getItem('noticias')) || [];
+            
             container.innerHTML = lista.map((n, i) => `
-                <div class="news-item">
-                    <span>${n.titulo.substring(0, 20)}...</span>
+                <div class="news-manage-item ${n.fixada ? 'is-pinned' : ''}">
                     <div>
-                        <button class="btn" style="background:#30363d; color:white;" onclick="prepararEdicao(${i})">Editar</button>
-                        <button class="btn btn-del" onclick="excluir(${i})">X</button>
+                        <strong>${n.fixada ? '📌 ' : ''}${n.titulo.substring(0, 30)}...</strong>
+                    </div>
+                    <div class="controls">
+                        <button class="btn btn-small" style="background:${n.fixada ? var(--gold) : '#30363d'}; color:${n.fixada ? 'black' : 'white'}" onclick="toggleFixar(${i})">
+                            ${n.fixada ? 'Desafixar' : 'Fixar'}
+                        </button>
+                        <button class="btn btn-small" style="background:#238636; color:white" onclick="prepararEdicao(${i})">Editar</button>
+                        <button class="btn btn-small" style="background:var(--danger); color:white" onclick="excluir(${i})">X</button>
                     </div>
                 </div>
             `).join('');
         }
 
+        function toggleFixar(i) {
+            let lista = JSON.parse(localStorage.getItem('noticias'));
+            lista[i].fixada = !lista[i].fixada;
+            
+            // Reordenar para fixados ficarem no topo
+            lista.sort((a, b) => b.fixada - a.fixada);
+            
+            localStorage.setItem('noticias', JSON.stringify(lista));
+            carregarLista();
+        }
+
         function excluir(i) {
-            if(confirm("Deseja apagar essa notícia?")) {
+            if(confirm("Apagar esta memória do sistema?")) {
                 let lista = JSON.parse(localStorage.getItem('noticias'));
                 lista.splice(i, 1);
                 localStorage.setItem('noticias', JSON.stringify(lista));
@@ -89,17 +125,24 @@
         function prepararEdicao(i) {
             let lista = JSON.parse(localStorage.getItem('noticias'));
             document.getElementById('newsTitle').value = lista[i].titulo;
+            document.getElementById('newsImg').value = lista[i].imagem || "";
             document.getElementById('newsContent').value = lista[i].texto;
             document.getElementById('editIndex').value = i;
-            document.getElementById('formTitle').innerText = "✏️ Editando Notícia";
-            document.getElementById('btnAction').innerText = "SALVAR ALTERAÇÕES";
-            document.getElementById('btnAction').style.background = "#ffcf40";
+            document.getElementById('formTitle').innerText = "✏️ Editando Memória";
+            document.getElementById('btnAction').innerText = "ATUALIZAR NOTÍCIA";
+            document.getElementById('btnAction').style.background = var(--gold);
+        }
+
+        function limparCampos() {
+            document.getElementById('newsTitle').value = "";
+            document.getElementById('newsImg').value = "";
+            document.getElementById('newsContent').value = "";
         }
 
         function resetForm() {
             document.getElementById('editIndex').value = "-1";
-            document.getElementById('formTitle').innerText = "📢 Publicar Notícia";
-            document.getElementById('btnAction').innerText = "PUBLICAR NO FEED";
+            document.getElementById('formTitle').innerText = "📢 Nova Transmissão";
+            document.getElementById('btnAction').innerText = "PUBLICAR NO FEED GLOBAL";
             document.getElementById('btnAction').style.background = "var(--primary)";
         }
 
