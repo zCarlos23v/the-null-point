@@ -7,62 +7,49 @@
     <style>
         :root { --primary: #00d4ff; --bg: #0a0e14; --card-bg: #11161d; }
         body { 
-            background: var(--bg); 
-            background-image: radial-gradient(circle, #1a202c 1px, transparent 1px);
-            background-size: 30px 30px;
-            display: flex; justify-content: center; align-items: center; 
-            min-height: 100vh; margin: 0; font-family: 'Inter', sans-serif; color: white;
+            background: var(--bg); background-image: radial-gradient(circle, #1a202c 1px, transparent 1px);
+            background-size: 30px 30px; display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; margin: 0; font-family: sans-serif; color: white;
+            animation: fadeIn 0.8s ease-out;
         }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .card { 
             background: var(--card-bg); width: 90%; max-width: 400px; padding: 40px; 
-            border-radius: 20px; border: 1px solid #30363d; text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 20px; border: 1px solid #30363d; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .logo { font-size: 2.5rem; font-weight: 900; margin-bottom: 5px; }
         .accent { color: var(--primary); text-shadow: 0 0 15px rgba(0, 212, 255, 0.5); }
         input { 
             width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; 
-            border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box;
-            outline: none; transition: 0.3s;
+            border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box; outline: none; transition: 0.3s;
         }
-        input:focus { border-color: var(--primary); }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
         .btn-glow { 
-            width: 100%; padding: 15px; background: #238636; border: none; 
-            border-radius: 10px; color: white; font-weight: bold; cursor: pointer; 
-            margin-top: 20px; font-size: 1rem; transition: 0.3s;
+            width: 100%; padding: 15px; background: #238636; border: none; border-radius: 10px; 
+            color: white; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s;
         }
-        .btn-glow:hover { background: #2ea043; box-shadow: 0 0 20px rgba(35, 134, 54, 0.4); }
-        .switch-text { font-size: 0.8rem; color: #8b949e; margin-top: 15px; }
-        .switch-text span { color: var(--primary); cursor: pointer; text-decoration: underline; }
+        .btn-glow:hover { transform: scale(1.02); background: #2ea043; box-shadow: 0 0 20px rgba(35, 134, 54, 0.4); }
     </style>
 </head>
 <body>
     <div class="card">
         <h1 class="logo">THE NULL <span class="accent">POINT</span></h1>
-        <p style="color: #8b949e; margin-bottom: 20px;">Bem-vindo ao Ponto Zero.</p>
-        
-        <input type="text" id="user" placeholder="Nome de Usuário">
-        <input type="password" id="pass" placeholder="Senha do Sistema">
-        
+        <p style="color: #8b949e; margin-bottom: 20px;">Acesse o Ponto Zero.</p>
+        <input type="text" id="user" placeholder="Usuário (use 'admin')">
+        <input type="password" id="pass" placeholder="Senha (use '1234')">
         <button class="btn-glow" onclick="logar()">ENTRAR NO UNIVERSO</button>
-        <p class="switch-text">Novo por aqui? <span onclick="aviso()">Criar nova conta</span></p>
     </div>
-
     <script>
         function logar() {
-            var usuario = document.getElementById('user').value;
-            // Sistema Simples de Login
-            if (usuario.toLowerCase() === 'admin') {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if (u.toLowerCase() === 'admin' && p === '1234') {
+                localStorage.setItem('usuarioLogado', 'OWNER');
                 window.location.href = 'admin.html';
-            } else if (usuario === "") {
-                alert("Por favor, digite um nome!");
-            } else {
+            } else if (u !== "" && p !== "") {
+                localStorage.setItem('usuarioLogado', u.toUpperCase());
                 window.location.href = 'home.html';
-            }
-        }
-
-        function aviso() {
-            alert("O sistema de cadastro da Guilda será aberto em breve para novos membros!");
+            } else { alert("Preencha tudo!"); }
         }
     </script>
 </body>
