@@ -3,69 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Null Point - Acesso</title>
+    <title>Login - The Null Point</title>
     <style>
-        :root { --primary: #00d4ff; --bg: #0a0e14; --card-bg: #11161d; }
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; }
         body { 
-            background: var(--bg); display: flex; justify-content: center; align-items: center; 
-            min-height: 100vh; margin: 0; font-family: sans-serif; color: white;
+            background: var(--bg); color: white; font-family: sans-serif; 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; 
         }
-        .card { 
-            background: var(--card-bg); width: 90%; max-width: 400px; padding: 40px; 
-            border-radius: 20px; border: 1px solid #30363d; text-align: center;
+        .login-card { 
+            background: var(--card); padding: 40px; border-radius: 20px; 
+            border: 1px solid #30363d; width: 350px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .logo { font-size: 2.2rem; font-weight: 900; margin-bottom: 20px; }
-        .accent { color: var(--primary); }
+        .logo { font-size: 1.8rem; font-weight: 900; color: var(--primary); margin-bottom: 20px; }
         input { 
             width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; 
-            border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box;
+            border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box; 
         }
-        .btn-glow { 
-            width: 100%; padding: 15px; background: #238636; border: none; border-radius: 10px; 
-            color: white; font-weight: bold; cursor: pointer; margin-top: 10px;
+        button { 
+            width: 100%; padding: 12px; background: var(--primary); color: black; 
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;
         }
-        .link-switch { color: var(--primary); cursor: pointer; text-decoration: underline; font-size: 0.9rem; margin-top: 15px; display: inline-block; }
-        .hidden { display: none; }
+        button:hover { opacity: 0.9; }
+        .error { color: #f85149; font-size: 0.8rem; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
-    <div class="card" id="loginBox">
-        <h1 class="logo">THE NULL <span class="accent">POINT</span></h1>
-        <p style="color: #8b949e;">Acesse o Ponto Zero.</p>
-        <input type="text" id="user" placeholder="Usuário (admin)">
-        <input type="password" id="pass" placeholder="Senha (1234)">
-        <button class="btn-glow" onclick="entrar()">ENTRAR NO UNIVERSO</button>
-        <br>
-        <span class="link-switch" onclick="document.getElementById('loginBox').classList.add('hidden'); document.getElementById('registerBox').classList.remove('hidden');">Criar nova conta</span>
-    </div>
 
-    <div class="card hidden" id="registerBox">
-        <h1 class="logo">NOVA <span class="accent">GUILDA</span></h1>
-        <input type="text" placeholder="Nome Completo">
-        <input type="text" placeholder="Usuário">
-        <input type="password" placeholder="Senha">
-        <button class="btn-glow" style="background: var(--primary); color: black;" onclick="location.reload()">FINALIZAR CADASTRO</button>
-        <br>
-        <span class="link-switch" onclick="location.reload()">Voltar</span>
+    <div class="login-card">
+        <div class="logo">THE NULL POINT</div>
+        <p>Acesse o Universo</p>
+        
+        <input type="text" id="user" placeholder="Nome de Usuário">
+        <input type="password" id="pass" placeholder="Sua Senha">
+        
+        <button onclick="fazerLogin()">ENTRAR NO SISTEMA</button>
+        <div id="msgErro" class="error">Usuário banido ou senha incorreta!</div>
     </div>
 
     <script>
-        function entrar() {
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
-
-            if (u.toLowerCase() === 'admin' && p === '1234') {
-                localStorage.setItem('usuarioLogado', 'Carlos'); 
-                localStorage.setItem('cargo', 'Supremo Criador 👑');
-                window.location.href = 'admin.html';
-            } else if (u !== "" && p !== "") {
-                localStorage.setItem('usuarioLogado', u);
-                localStorage.setItem('cargo', 'Membro da Guilda');
-                window.location.href = 'home.html';
-            } else {
-                alert("Preencha os campos!");
+        // SEGURANÇA: Verifica banimento antes de tudo
+        function verificarBan(nome) {
+            const banidos = JSON.parse(localStorage.getItem('banidos')) || [];
+            if (banidos.includes(nome)) {
+                location.href = 'banido.html';
+                return true;
             }
+            return false;
         }
+
+        function fazerLogin() {
+            const user = document.getElementById('user').value.trim();
+            const pass = document.getElementById('pass').value;
+            const erro = document.getElementById('msgErro');
+
+            if(!user || !pass) return;
+
+            // 1. Verifica se o cara é um banido tentando voltar
+            if (verificarBan(user)) return;
+
+            // 2. Lógica de Login (Simulada para o seu uso)
+            // Se for o seu nome, a gente já define como o Supremo Criador
+            localStorage.setItem('usuarioLogado', user);
+            
+            if(user.toLowerCase() === 'carlos') {
+                localStorage.setItem('cargo', 'Supremo Criador 👑');
+            } else {
+                localStorage.setItem('cargo', 'Membro da Guilda');
+            }
+
+            location.href = 'home.html';
+        }
+
+        // Se já estiver logado, verifica se foi banido enquanto navegava
+        const logado = localStorage.getItem('usuarioLogado');
+        if(logado) verificarBan(logado);
     </script>
 </body>
 </html>
