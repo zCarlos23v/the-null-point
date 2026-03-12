@@ -10,7 +10,7 @@
         
         /* BARRA LATERAL (Design Carlos) */
         .sidebar { width: 250px; background: var(--sidebar); border-right: 1px solid #30363d; display: flex; flex-direction: column; padding: 20px; gap: 10px; }
-        .logo { font-weight: 900; font-size: 1.2rem; margin-bottom: 30px; text-align: center; color: var(--primary); }
+        .logo { font-weight: 900; font-size: 1.2rem; margin-bottom: 30px; text-align: center; color: var(--primary); text-transform: uppercase; }
         .nav-box { background: #21262d; padding: 15px; border-radius: 12px; cursor: pointer; border: 1px solid transparent; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
         .nav-box:hover { border-color: var(--primary); background: #30363d; }
         .nav-box.active { border-color: var(--primary); background: rgba(0, 212, 255, 0.1); }
@@ -22,32 +22,44 @@
 
         /* GRID DE NOTÍCIAS E GUILDA */
         .layout-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; max-width: 1100px; margin: 0 auto; }
-        .search-bar { width: 100%; padding: 15px; background: var(--card); border: 1px solid #30363d; border-radius: 12px; color: white; margin-bottom: 20px; box-sizing: border-box; }
+        .search-bar { width: 100%; padding: 15px; background: var(--card); border: 1px solid #30363d; border-radius: 12px; color: white; margin-bottom: 20px; box-sizing: border-box; font-size: 1rem; }
         
-        /* Cards de Notícias com Foto */
+        /* Cards de Notícias */
         .news-card { background: var(--card); border-radius: 15px; border: 1px solid #30363d; margin-bottom: 20px; overflow: hidden; position: relative; }
-        .news-img { width: 100%; height: 220px; object-fit: cover; background: #000; }
+        .news-img { width: 100%; height: 230px; object-fit: cover; background: #000; border-bottom: 1px solid #30363d; }
         .news-body { padding: 20px; }
-        .news-card h2 { color: var(--primary); margin: 5px 0; }
+        .news-card h2 { color: var(--primary); margin: 5px 0; font-size: 1.5rem; }
+        .news-card p { color: #8b949e; line-height: 1.5; }
+        
+        /* Tag de Fixado */
         .pinned { border: 2px solid var(--gold); }
-        .pinned-tag { position: absolute; top: 10px; left: 10px; background: var(--gold); color: black; padding: 2px 10px; border-radius: 5px; font-weight: bold; font-size: 0.7rem; }
+        .pinned-tag { position: absolute; top: 12px; left: 12px; background: var(--gold); color: black; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
 
-        /* Card da Guilda na Direita */
-        .guild-card { background: var(--sidebar); padding: 20px; border-radius: 15px; border: 1px solid var(--gold); height: fit-content; }
-        .btn-entrar { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--primary); color: var(--primary); border-radius: 8px; cursor: not-allowed; margin-top: 15px; }
+        /* Card da Guilda */
+        .guild-card { background: var(--sidebar); padding: 20px; border-radius: 15px; border: 1px solid var(--gold); height: fit-content; position: sticky; top: 0; }
+        .btn-entrar { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--primary); color: var(--primary); border-radius: 8px; cursor: not-allowed; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
 
+    <script>
+        (function verificarSeguranca() {
+            const user = localStorage.getItem('usuarioLogado');
+            const banidos = JSON.parse(localStorage.getItem('banidos')) || [];
+            if (!user) { location.href = 'index.html'; return; }
+            if (banidos.includes(user)) { location.href = 'banido.html'; }
+        })();
+    </script>
+
     <aside class="sidebar">
-        <div class="logo">THE NULL POINT</div>
+        <div class="logo">The Null Point</div>
         <div class="nav-box active" onclick="location.href='home.html'">🏠 Feed Global</div>
         <div class="nav-box" onclick="location.href='perfil.html'">👤 Meu Perfil</div>
         <div class="nav-box" onclick="location.href='amigos.html'">👥 Amigos</div>
-        <div class="nav-box" onclick="alert('Sistema de Guildas em desenvolvimento!')">🛡️ Guildas</div>
+        <div class="nav-box" onclick="alert('Guildas em breve!')">🛡️ Guildas</div>
         <div class="nav-box" onclick="location.href='ranking.html'">📈 Top Ranking</div>
-        <div class="nav-box" onclick="alert('Configurações')">⚙️ Ajustes</div>
-        <div class="nav-box" style="margin-top: auto; color: #f85149;" onclick="localStorage.clear(); location.href='index.html'">🚪 Sair</div>
+        <div class="nav-box" onclick="location.href='admin.html'">👑 Painel Admin</div>
+        <div class="nav-box" style="margin-top: auto; color: #f85149;" onclick="localStorage.removeItem('usuarioLogado'); location.href='index.html'">🚪 Sair</div>
     </aside>
 
     <main class="main-content">
@@ -59,44 +71,48 @@
 
         <div class="layout-grid">
             <section>
-                <input type="text" class="search-bar" placeholder="🔍 Pesquisar no Ponto Zero..." onkeyup="renderizar(this.value)">
+                <input type="text" class="search-bar" placeholder="🔍 Buscar transmissões no Ponto Zero..." onkeyup="renderizar(this.value)">
                 <div id="feed"></div>
             </section>
 
             <aside>
                 <div class="guild-card">
-                    <h3 style="color: var(--gold); margin-top:0;">🛡️ GUILDA OFICIAL</h3>
+                    <h3 style="color: var(--gold); margin-top:0; font-size: 1.1rem;">🛡️ GUILDA OFICIAL</h3>
                     <p><b>Nome:</b> The Originals</p>
-                    <p><b>Líder:</b> Carlos <span style="font-size: 0.7rem; background: var(--gold); color: black; padding: 2px 5px; border-radius: 4px;">OWNER</span></p>
-                    <hr style="border: 0.5px solid #30363d;">
-                    <p style="font-size: 0.8rem; color: #8b949e;">Status: Recrutamento Fechado</p>
-                    <button class="btn-entrar">PEDIR PARA ENTRAR</button>
+                    <p><b>Líder:</b> Carlos <span style="font-size: 0.7rem; background: var(--gold); color: black; padding: 2px 5px; border-radius: 4px; font-weight: 900;">OWNER</span></p>
+                    <hr style="border: 0.5px solid #30363d; margin: 15px 0;">
+                    <p style="font-size: 0.8rem; color: #8b949e;">Status: <b>Recrutamento Fechado</b></p>
+                    <button class="btn-entrar">PEDIR ACESSO</button>
                 </div>
             </aside>
         </div>
     </main>
 
     <script>
-        // Carrega o nome do Carlos (ou outro usuário)
+        // Nome do usuário no badge
         document.getElementById('txtUser').innerText = "Olá, " + (localStorage.getItem('usuarioLogado') || 'Viajante');
 
         function renderizar(filtro = "") {
             const feed = document.getElementById('feed');
             const lista = JSON.parse(localStorage.getItem('noticias')) || [];
             
-            // Filtra as notícias pelo título
+            // Filtra por título
             const filtradas = lista.filter(n => n.titulo.toLowerCase().includes(filtro.toLowerCase()));
 
             if(filtradas.length === 0) {
-                feed.innerHTML = "<p style='text-align:center; color:#8b949e; margin-top:50px;'>O vácuo está silencioso... (Nenhuma notícia)</p>";
+                feed.innerHTML = `
+                    <div style="text-align:center; padding:50px; color:#8b949e;">
+                        <div style="font-size:3rem; margin-bottom:10px;">🌌</div>
+                        O vácuo está silencioso...<br>Nenhuma notícia encontrada.
+                    </div>`;
                 return;
             }
 
-            // Gera os cards (com foto e suporte a fixado)
+            // Renderiza com suporte a Fixado e Imagens
             feed.innerHTML = filtradas.map(n => `
                 <div class="news-card ${n.fixada ? 'pinned' : ''}">
                     ${n.fixada ? '<div class="pinned-tag">📌 FIXADO</div>' : ''}
-                    ${n.imagem ? `<img src="${n.imagem}" class="news-img">` : ''}
+                    ${n.imagem ? `<img src="${n.imagem}" class="news-img" onerror="this.style.display='none'">` : ''}
                     <div class="news-body">
                         <small style="color:#8b949e;">${n.data}</small>
                         <h2>${n.titulo}</h2>
@@ -106,7 +122,6 @@
             `).join('');
         }
         
-        // Inicia o feed
         renderizar();
     </script>
 </body>
