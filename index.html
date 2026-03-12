@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Null Point - Login</title>
+    <style>
+        /* AQUI VAI O SEU CSS PREMIUM */
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card-bg: #11161d; }
+        body { 
+            background: var(--bg); 
+            background-image: radial-gradient(circle, #1a202c 1px, transparent 1px);
+            background-size: 30px 30px;
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; margin: 0; font-family: sans-serif; color: white;
+        }
+        .card { 
+            background: var(--card-bg); width: 90%; max-width: 400px; padding: 40px; 
+            border-radius: 20px; border: 1px solid #30363d; text-align: center;
+        }
+        .logo { font-size: 2rem; font-weight: 900; }
+        .accent { color: var(--primary); text-shadow: 0 0 15px rgba(0, 212, 255, 0.5); }
+        input { 
+            width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; 
+            border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box;
+        }
+        .btn-glow { 
+            width: 100%; padding: 15px; background: #238636; border: none; 
+            border-radius: 10px; color: white; font-weight: bold; cursor: pointer; margin-top: 20px;
+        }
+        .btn-glow:hover { box-shadow: 0 0 20px rgba(35, 134, 54, 0.5); }
+        .switch-text { font-size: 0.8rem; color: #8b949e; margin-top: 15px; }
+        .switch-text span { color: var(--primary); cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1 class="logo">THE NULL <span class="accent">POINT</span></h1>
+        <p style="color: #8b949e; margin-bottom: 20px;">Bem-vindo ao Ponto Zero.</p>
+        
+        <input type="text" placeholder="Usuário">
+        <input type="password" placeholder="Senha">
+        
+        <button class="btn-glow">ENTRAR NO UNIVERSO</button>
+        <p class="switch-text">Novo por aqui? <span>Criar nova conta</span></p>
+    </div>
+</body>
+</html>
