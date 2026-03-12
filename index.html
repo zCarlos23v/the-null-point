@@ -13,35 +13,26 @@
             animation: fadeIn 0.8s ease-out;
         }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        
         .card { 
             background: var(--card-bg); width: 90%; max-width: 400px; padding: 40px; 
             border-radius: 20px; border: 1px solid #30363d; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: 0.5s;
         }
         .logo { font-size: 2.2rem; font-weight: 900; margin-bottom: 20px; }
         .accent { color: var(--primary); text-shadow: 0 0 15px rgba(0, 212, 255, 0.5); }
-        
         input { 
             width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; 
             border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box; outline: none;
         }
-        input:focus { border-color: var(--primary); }
-
         .btn-glow { 
             width: 100%; padding: 15px; background: #238636; border: none; border-radius: 10px; 
             color: white; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s;
         }
         .btn-glow:hover { background: #2ea043; transform: translateY(-2px); }
-
         .link-switch { color: var(--primary); cursor: pointer; text-decoration: underline; font-size: 0.9rem; margin-top: 15px; display: inline-block; }
-        
-        /* Classe para esconder elementos */
         .hidden { display: none; }
     </style>
 </head>
 <body>
-
     <div class="card" id="loginBox">
         <h1 class="logo">THE NULL <span class="accent">POINT</span></h1>
         <p style="color: #8b949e;">Bem-vindo de volta.</p>
@@ -54,40 +45,33 @@
 
     <div class="card hidden" id="registerBox">
         <h1 class="logo">NOVA <span class="accent">GUILDA</span></h1>
-        <p style="color: #8b949e;">Junte-se ao Ponto Zero.</p>
         <input type="text" placeholder="Nome Completo">
-        <input type="text" id="newUser" placeholder="Escolha um Usuário">
+        <input type="text" placeholder="Escolha um Usuário">
         <input type="password" placeholder="Escolha uma Senha">
         <button class="btn-glow" style="background: var(--primary); color: black;" onclick="cadastrar()">FINALIZAR CADASTRO</button>
         <br>
-        <span class="link-switch" onclick="switchCard()">Já tenho conta. Voltar</span>
+        <span class="link-switch" onclick="switchCard()">Voltar</span>
     </div>
 
     <script>
-        // Função para trocar entre Login e Cadastro sem F5
         function switchCard() {
             document.getElementById('loginBox').classList.toggle('hidden');
             document.getElementById('registerBox').classList.toggle('hidden');
         }
-
         function entrar() {
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
-
             if (u.toLowerCase() === 'admin' && p === '1234') {
                 localStorage.setItem('usuarioLogado', 'OWNER');
-                window.location.href = 'admin.html'; // Admin vai pro painel
+                window.location.href = 'admin.html';
             } else if (u !== "" && p !== "") {
                 localStorage.setItem('usuarioLogado', u.toUpperCase());
-                window.location.href = 'home.html'; // Usuário vai pra Home
-            } else {
-                alert("Digite usuário e senha!");
-            }
+                window.location.href = 'home.html';
+            } else { alert("Preencha tudo!"); }
         }
-
         function cadastrar() {
-            alert("Cadastro realizado com sucesso (Simulação)! Agora faça login.");
-            switchCard(); // Volta pro login automaticamente
+            alert("Sucesso! Faça login agora.");
+            switchCard();
         }
     </script>
 </body>
