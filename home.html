@@ -6,68 +6,43 @@
     <title>The Null Point - Home</title>
     <style>
         :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; }
-        
-        /* NAVBAR */
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; animation: fadeIn 0.6s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px 5%; background: rgba(10, 14, 20, 0.95);
             position: sticky; top: 0; border-bottom: 1px solid #30363d; z-index: 1000;
         }
-        .logo-nav { font-weight: 900; font-size: 1.2rem; }
+        .logo-nav { font-weight: 900; }
         .logo-nav span { color: var(--primary); }
-        .user-status { display: flex; align-items: center; gap: 10px; }
-        .level-badge { background: var(--primary); color: black; font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 5px; }
-        .profile-pic { width: 35px; height: 35px; background: #30363d; border-radius: 50%; border: 2px solid var(--primary); cursor: pointer; }
-
-        /* HERO DESTAQUE */
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .btn-logout { background: none; border: 1px solid #f85149; color: #f85149; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
         .hero-news {
-            height: 50vh; background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.9)), url('https://picsum.photos/1200/600?random=10') center/cover;
-            margin: 20px 5%; border-radius: 20px; display: flex; align-items: flex-end; padding: 40px;
+            height: 40vh; background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.9)), url('https://picsum.photos/1200/600?geek');
+            margin: 20px 5%; border-radius: 20px; display: flex; align-items: flex-end; padding: 40px; border: 1px solid #30363d;
         }
-        .hero-content h1 { font-size: 2rem; margin: 10px 0; }
-        .btn-read { background: var(--primary); border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-
-        /* GRID */
         .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 20px 5%; }
-        .news-card { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #30363d; transition: 0.3s; }
-        .news-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .card-img { height: 180px; background-size: cover; background-position: center; }
-        .card-body { padding: 15px; }
+        .news-card { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #30363d; transition: 0.3s; cursor: pointer; }
+        .news-card:hover { transform: translateY(-10px); border-color: var(--primary); }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="logo-nav">THE NULL <span>POINT</span></div>
-        <div class="user-status">
-            <div class="level-badge">LVL 15</div>
-            <div class="profile-pic" onclick="location.href='admin.html'"></div>
+        <div class="user-info">
+            <span id="nomeUser">Carregando...</span>
+            <button class="btn-logout" onclick="location.href='index.html'">Sair</button>
         </div>
     </nav>
-
     <div class="hero-news">
-        <div class="hero-content">
-            <span style="color: var(--primary); font-weight: bold;">DESTAQUE</span>
-            <h1>Sandman: Segunda temporada ganha data de estreia e novo teaser</h1>
-            <button class="btn-read">Ler agora</button>
-        </div>
+        <h1>Bem-vindo ao Ponto Zero das Notícias</h1>
     </div>
-
-    <section class="news-grid">
-        <div class="news-card">
-            <div class="card-img" style="background-image: url('https://picsum.photos/400/250?random=1')"></div>
-            <div class="card-body">
-                <span style="color: var(--primary); font-size: 0.7rem;">GAMES</span>
-                <h3>GTA VI: Novos rumores indicam mapa evolutivo</h3>
-            </div>
-        </div>
-        <div class="news-card">
-            <div class="card-img" style="background-image: url('https://picsum.photos/400/250?random=2')"></div>
-            <div class="card-body">
-                <span style="color: var(--primary); font-size: 0.7rem;">TECH</span>
-                <h3>O PC Gamer definitivo para 2026</h3>
-            </div>
-        </div>
-    </section>
+    <div class="news-grid">
+        <div class="news-card"><div style="height:150px; background:#30363d"></div><div style="padding:15px"><h3>Novidades na Guilda</h3><p>O sistema de login foi atualizado.</p></div></div>
+        <div class="news-card"><div style="height:150px; background:#30363d"></div><div style="padding:15px"><h3>Mundo Geek</h3><p>As melhores notícias chegam aqui.</p></div></div>
+    </div>
+    <script>
+        document.getElementById('nomeUser').innerText = "Olá, " + (localStorage.getItem('usuarioLogado') || 'Viajante');
+    </script>
 </body>
 </html>
