@@ -3,60 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ponto Zero - Trono do Criador</title>
+    <title>Ponto Zero - Admin</title>
     <style>
-        :root { --primary: #00d4ff; --owner: #ffcf40; --bg: #0a0e14; --card: #161b22; --danger: #f85149; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; animation: slideIn 0.5s ease; min-height: 100vh; }
-        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
-        .sidebar { width: 220px; background: #0d1117; border-right: 1px solid #30363d; padding: 30px 20px; display: flex; flex-direction: column; gap: 15px; }
-        .nav-link { color: #8b949e; text-decoration: none; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .nav-link:hover { background: #21262d; color: white; }
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --danger: #f85149; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #0d1117; border-right: 1px solid #30363d; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
         .main { flex: 1; padding: 40px; }
-        .badge { background: var(--owner); color: black; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; }
-        .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
-        .card { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #30363d; }
-        .xp-group { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
-        input { padding: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; }
-        .xp-bar { height: 12px; background: #30363d; border-radius: 10px; overflow: hidden; margin-top: 10px; }
-        .xp-fill { height: 100%; background: var(--primary); width: 0%; transition: 1.5s width cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--primary); }
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-primary { background: var(--primary); color: black; }
-        .btn-danger { background: none; border: 1px solid var(--danger); color: var(--danger); }
+        .card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #30363d; margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 10px; margin-top: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box; }
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; }
+        .btn-post { background: var(--primary); color: black; }
     </style>
 </head>
 <body>
     <aside class="sidebar">
-        <div style="font-weight:900; margin-bottom:20px;">THE NULL <span>POINT</span></div>
-        <div class="nav-link" onclick="location.href='home.html'">🏠 Home Notícias</div>
-        <div class="nav-link" onclick="logout()" style="color: var(--danger); margin-top: auto;">🚪 Sair</div>
+        <h3>THE NULL POINT</h3>
+        <div onclick="location.href='home.html'" style="cursor:pointer">🏠 Ver Site</div>
+        <div onclick="localStorage.removeItem('usuarioLogado'); location.href='index.html'" style="color:var(--danger); cursor:pointer; margin-top:auto">🚪 Sair</div>
     </aside>
     <main class="main">
-        <h1>Painel do Criador <span class="badge">OWNER</span></h1>
-        <div class="control-grid">
-            <div class="card">
-                <h3>Controle de XP</h3>
-                <div class="xp-group">
-                    <input type="number" id="xpInput" min="1" max="99" value="1">
-                    <button class="btn btn-primary" onclick="definirNivel()">APLICAR</button>
-                </div>
-                <p>Nível Atual: <span id="lvlText">1</span></p>
-                <div class="xp-bar"><div class="xp-fill" id="fill"></div></div>
-            </div>
-            <div class="card">
-                <h3 style="color:var(--danger)">Moderação</h3>
-                <input type="text" id="target" placeholder="Usuário" style="width:70%; margin-bottom:10px;">
-                <br>
-                <button class="btn btn-danger" onclick="alert('Usuário banido com sucesso (Simulação)')">BANIR</button>
-            </div>
+        <h1>Painel do Criador</h1>
+        
+        <div class="card">
+            <h3>📢 Publicar Nova Notícia</h3>
+            <input type="text" id="newsTitle" placeholder="Título da Notícia">
+            <textarea id="newsContent" rows="4" placeholder="Conteúdo da notícia..."></textarea>
+            <button class="btn btn-post" onclick="postarNoticia()">PUBLICAR NO FEED</button>
+        </div>
+
+        <div class="card">
+            <h3>⚙️ Controle de XP</h3>
+            <input type="number" id="xpInput" value="1">
+            <button class="btn" style="background:#30363d; color:white;" onclick="document.getElementById('lvlText').innerText = document.getElementById('xpInput').value">APLICAR</button>
+            <p>Nível: <span id="lvlText">1</span></p>
         </div>
     </main>
+
     <script>
-        if(localStorage.getItem('usuarioLogado') !== 'OWNER') { window.location.href = 'index.html'; }
-        function logout() { localStorage.removeItem('usuarioLogado'); window.location.href = 'index.html'; }
-        function definirNivel() {
-            let n = document.getElementById('xpInput').value;
-            document.getElementById('fill').style.width = n + "%";
-            document.getElementById('lvlText').innerText = n;
+        function postarNoticia() {
+            const titulo = document.getElementById('newsTitle').value;
+            const texto = document.getElementById('newsContent').value;
+            if(!titulo || !texto) return alert("Escreva algo!");
+
+            const novaNoticia = { titulo, texto, data: new Date().toLocaleDateString() };
+            
+            // Pega as notícias antigas ou cria uma lista vazia
+            let lista = JSON.parse(localStorage.getItem('noticias')) || [];
+            lista.unshift(novaNoticia); // Adiciona no topo
+            localStorage.setItem('noticias', JSON.stringify(lista));
+
+            alert("Notícia enviada ao Universo!");
+            document.getElementById('newsTitle').value = "";
+            document.getElementById('newsContent').value = "";
         }
     </script>
 </body>
