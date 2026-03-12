@@ -3,27 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Null Point - Home</title>
+    <title>The Null Point - Feed</title>
     <style>
-        :root { --primary: #00d4ff; --bg: #0a0e14; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; animation: fadeIn 0.6s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .navbar { display: flex; justify-content: space-between; padding: 15px 5%; background: #0d1117; border-bottom: 1px solid #30363d; }
-        .btn-logout { background: none; border: 1px solid #f85149; color: #f85149; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-        .hero { height: 300px; background: linear-gradient(transparent, #0a0e14), url('https://picsum.photos/1200/400?tech'); background-size: cover; display: flex; align-items: flex-end; padding: 40px 5%; }
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; }
+        .navbar { display: flex; justify-content: space-between; padding: 20px 5%; background: #0d1117; border-bottom: 1px solid #30363d; }
+        .feed { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .news-card { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #30363d; margin-bottom: 20px; animation: slideUp 0.5s ease; }
+        @keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+        .news-card h2 { color: var(--primary); margin-top: 0; }
+        .news-card small { color: #8b949e; }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <div style="font-weight:900;">THE NULL <span style="color:var(--primary)">POINT</span></div>
-        <div>
-            <span id="nomeUser">...</span>
-            <button class="btn-logout" onclick="location.href='index.html'">Sair</button>
-        </div>
+        <div style="font-weight:900;">THE NULL POINT</div>
+        <div id="userDisplay"></div>
     </nav>
-    <div class="hero"><h1>Últimas Notícias da Guilda</h1></div>
+
+    <div class="feed" id="feedNoticias">
+        </div>
+
     <script>
-        document.getElementById('nomeUser').innerText = "Olá, " + (localStorage.getItem('usuarioLogado') || 'Viajante');
+        document.getElementById('userDisplay').innerText = "Olá, " + (localStorage.getItem('usuarioLogado') || 'Viajante');
+
+        function carregarNoticias() {
+            const feed = document.getElementById('feedNoticias');
+            const lista = JSON.parse(localStorage.getItem('noticias')) || [];
+            
+            if(lista.length === 0) {
+                feed.innerHTML = "<p style='text-align:center; color:#8b949e;'>Nenhuma notícia publicada ainda.</p>";
+                return;
+            }
+
+            feed.innerHTML = lista.map(n => `
+                <div class="news-card">
+                    <small>${n.data}</small>
+                    <h2>${n.titulo}</h2>
+                    <p>${n.texto}</p>
+                </div>
+            `).join('');
+        }
+
+        carregarNoticias();
     </script>
 </body>
 </html>
