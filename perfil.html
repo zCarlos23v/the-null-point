@@ -5,137 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil - The Null Point</title>
     <style>
-        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --gold: #ffcf40; --pink: #ff69b4; }
-        body { background: var(--bg); color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --sidebar: #0d1117; --gold: #ffcf40; --pink: #ff69b4; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
+        /* BARRA LATERAL PADRÃO CARLOS */
+        .sidebar { width: 250px; background: var(--sidebar); border-right: 1px solid #30363d; display: flex; flex-direction: column; padding: 20px; gap: 10px; }
+        .logo { font-weight: 900; font-size: 1.2rem; margin-bottom: 30px; text-align: center; color: var(--primary); }
+        .nav-box { background: #21262d; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; border: 1px solid transparent; }
+        .nav-box:hover { background: #30363d; border-color: var(--primary); }
+        .nav-box.active { border-color: var(--primary); background: rgba(0, 212, 255, 0.1); }
+
+        /* ÁREA DO PERFIL */
+        .main-content { flex: 1; overflow-y: auto; display: flex; justify-content: center; align-items: center; padding: 20px; }
         .perfil-card { 
             background: var(--card); padding: 40px; border-radius: 25px; border: 1px solid #30363d; 
-            text-align: center; width: 380px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); position: relative;
+            text-align: center; width: 100%; max-width: 400px; position: relative;
         }
         
-        /* Foto e Coroa */
         .avatar-box { position: relative; width: 130px; height: 130px; margin: 0 auto 20px; }
-        #imgPerfil { 
-            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
-            border: 4px solid var(--primary); background: #0d1117;
-        }
-        .coroa { position: absolute; top: -25px; right: -10px; font-size: 2.5rem; transform: rotate(15deg); display: none; }
+        #imgPerfil { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary); background: #000; }
+        .coroa { position: absolute; top: -20px; right: -5px; font-size: 2.5rem; transform: rotate(15deg); display: none; }
         
-        .genero-icon { font-size: 1.2rem; margin-left: 5px; }
-        h2 { margin: 10px 0; font-size: 1.8rem; }
-        .cargo { color: var(--gold); background: rgba(255,207,64,0.1); padding: 5px 15px; border-radius: 15px; font-size: 0.9rem; border: 1px solid var(--gold); }
+        .cargo { color: var(--gold); background: rgba(255,207,64,0.1); padding: 5px 15px; border-radius: 15px; font-size: 0.8rem; border: 1px solid var(--gold); }
+        .bio-box { margin: 20px 0; color: #8b949e; font-style: italic; min-height: 40px; font-size: 0.9rem; }
         
-        .bio-box { margin: 20px 0; color: #8b949e; font-style: italic; min-height: 40px; }
-        
-        /* Botões */
-        .btn-edit { background: #21262d; border: 1px solid #30363d; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin-bottom: 10px; width: 100%; }
-        .btn-voltar { color: #8b949e; cursor: pointer; text-decoration: none; font-size: 0.9rem; }
+        .btn-edit { background: #21262d; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; margin-top: 10px; }
+        .btn-edit:hover { border-color: var(--primary); }
 
-        /* MODAL DE EDIÇÃO (Painelzinho que abre) */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        /* MODAL DE EDIÇÃO */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: var(--card); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; border: 1px solid var(--primary); }
         input, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box; }
         
-        /* Quadrados de Gênero */
         .gender-select { display: flex; gap: 10px; margin: 15px 0; }
-        .gender-box { 
-            flex: 1; padding: 15px; border: 2px solid #30363d; border-radius: 12px; cursor: pointer; 
-            text-align: center; transition: 0.3s; 
-        }
-        .gender-box.selected-m { border-color: var(--primary); background: rgba(0,212,255,0.1); }
-        .gender-box.selected-f { border-color: var(--pink); background: rgba(255,105,180,0.1); }
+        .gender-box { flex: 1; padding: 15px; border: 2px solid #30363d; border-radius: 12px; cursor: pointer; text-align: center; }
+        .selected-m { border-color: var(--primary); background: rgba(0,212,255,0.1); }
+        .selected-f { border-color: var(--pink); background: rgba(255,105,180,0.1); }
     </style>
 </head>
 <body>
 
-    <div class="perfil-card">
-        <div class="avatar-box">
-            <img src="" id="imgPerfil" alt="Avatar">
-            <div class="coroa" id="coroaRei">👑</div>
-        </div>
-        
-        <h2><span id="nomeUser">...</span> <span id="sexoIcon"></span></h2>
-        <div style="margin-bottom: 15px;"><span class="cargo" id="cargoUser">Membro</span></div>
-        
-        <div class="bio-box" id="bioUser">Escreva algo sobre você no botão de editar...</div>
+    <aside class="sidebar">
+        <div class="logo">THE NULL POINT</div>
+        <div class="nav-box" onclick="location.href='home.html'">🏠 Feed Global</div>
+        <div class="nav-box active">👤 Meu Perfil</div>
+        <div class="nav-box" onclick="location.href='amigos.html'">👥 Amigos</div>
+        <div class="nav-box" onclick="alert('Guildas em breve!')">🛡️ Guildas</div>
+        <div class="nav-box" onclick="location.href='ranking.html'">📈 Top Ranking</div>
+        <div class="nav-box" style="margin-top: auto; color: #f85149;" onclick="localStorage.clear(); location.href='index.html'">🚪 Sair</div>
+    </aside>
 
-        <button class="btn-edit" onclick="abrirModal()">⚙️ Editar Perfil</button>
-        <br>
-        <a class="btn-voltar" href="home.html">Voltar para a Home</a>
-    </div>
+    <main class="main-content">
+        <div class="perfil-card">
+            <div class="avatar-box">
+                <img src="https://i.imgur.com/6VBx3io.png" id="imgPerfil">
+                <div class="coroa" id="coroaRei">👑</div>
+            </div>
+            <h2><span id="nomeUser">...</span> <span id="sexoIcon"></span></h2>
+            <div style="margin-bottom: 15px;"><span class="cargo">Supremo Criador</span></div>
+            <div class="bio-box" id="bioUser">Clique em editar para mudar sua bio...</div>
+            <button class="btn-edit" onclick="abrirModal()">⚙️ Editar Perfil</button>
+        </div>
+    </main>
 
     <div class="modal" id="modalEdit">
         <div class="modal-content">
-            <h3>Editar Perfil</h3>
+            <h3>Ajustar Identidade</h3>
             <input type="text" id="editFoto" placeholder="Link da Foto (URL)">
-            <textarea id="editBio" rows="3" placeholder="Sua biografia..."></textarea>
-            
-            <p>Identificação de Gênero:</p>
+            <textarea id="editBio" rows="3" placeholder="Sua história..."></textarea>
             <div class="gender-select">
-                <div class="gender-box" id="boxM" onclick="selectGender('M')">👨 Homem</div>
-                <div class="gender-box" id="boxF" onclick="selectGender('F')">👩 Mulher</div>
+                <div class="gender-box" id="boxM" onclick="setG('M')">👨 Homem</div>
+                <div class="gender-box" id="boxF" onclick="setG('F')">👩 Mulher</div>
             </div>
-
-            <button class="btn-edit" style="background: var(--primary); color: black;" onclick="salvarPerfil()">SALVAR ALTERAÇÕES</button>
-            <button class="btn-edit" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-edit" style="background:var(--primary); color:black;" onclick="salvar()">SALVAR</button>
+            <button class="btn-edit" onclick="fechar()">Cancelar</button>
         </div>
     </div>
 
     <script>
-        let generoSelecionado = "";
-
+        let gTemp = "";
         function abrirModal() {
             document.getElementById('modalEdit').style.display = 'flex';
             document.getElementById('editFoto').value = localStorage.getItem('foto') || "";
             document.getElementById('editBio').value = localStorage.getItem('bio') || "";
-            generoSelecionado = localStorage.getItem('genero') || "";
-            atualizarQuadrados();
+            gTemp = localStorage.getItem('genero') || "";
+            atualizarBoxes();
         }
-
-        function fecharModal() { document.getElementById('modalEdit').style.display = 'none'; }
-
-        function selectGender(g) {
-            generoSelecionado = g;
-            atualizarQuadrados();
+        function fechar() { document.getElementById('modalEdit').style.display = 'none'; }
+        function setG(g) { gTemp = g; atualizarBoxes(); }
+        function atualizarBoxes() {
+            document.getElementById('boxM').className = "gender-box " + (gTemp === 'M' ? 'selected-m' : '');
+            document.getElementById('boxF').className = "gender-box " + (gTemp === 'F' ? 'selected-f' : '');
         }
-
-        function atualizarQuadrados() {
-            document.getElementById('boxM').className = "gender-box " + (generoSelecionado === 'M' ? 'selected-m' : '');
-            document.getElementById('boxF').className = "gender-box " + (generoSelecionado === 'F' ? 'selected-f' : '');
-        }
-
-        function salvarPerfil() {
+        function salvar() {
             localStorage.setItem('foto', document.getElementById('editFoto').value);
             localStorage.setItem('bio', document.getElementById('editBio').value);
-            localStorage.setItem('genero', generoSelecionado);
-            fecharModal();
-            carregarDados();
+            localStorage.setItem('genero', gTemp);
+            fechar();
+            carregar();
         }
-
-        function carregarDados() {
-            const nome = localStorage.getItem('usuarioLogado') || "Usuário";
-            const cargo = localStorage.getItem('cargo') || "Membro da Guilda";
+        function carregar() {
+            const nome = localStorage.getItem('usuarioLogado') || "Visitante";
             const foto = localStorage.getItem('foto') || "https://i.imgur.com/6VBx3io.png";
-            const bio = localStorage.getItem('bio') || "Sem biografia definida.";
+            const bio = localStorage.getItem('bio') || "Sem biografia.";
             const genero = localStorage.getItem('genero');
-
             document.getElementById('nomeUser').innerText = nome;
-            document.getElementById('cargoUser').innerText = cargo;
             document.getElementById('imgPerfil').src = foto;
             document.getElementById('bioUser').innerText = bio;
-
-            // Ícone de gênero
-            const icon = document.getElementById('sexoIcon');
-            if(genero === 'M') icon.innerText = "♂️";
-            else if(genero === 'F') icon.innerText = "♀️";
-
-            // Se for o Carlos (Admin), mostra a coroa
-            if(nome.toLowerCase() === 'carlos' || cargo.includes('👑')) {
-                document.getElementById('coroaRei').style.display = 'block';
-            }
+            document.getElementById('sexoIcon').innerText = genero === 'M' ? '♂️' : (genero === 'F' ? '♀️' : '');
+            if(nome.toLowerCase() === 'carlos') document.getElementById('coroaRei').style.display = 'block';
         }
-
-        carregarDados();
+        carregar();
     </script>
 </body>
 </html>
