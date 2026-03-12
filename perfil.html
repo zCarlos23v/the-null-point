@@ -5,58 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil - The Null Point</title>
     <style>
-        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --gold: #ffcf40; }
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --gold: #ffcf40; --pink: #ff69b4; }
         body { background: var(--bg); color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        
         .perfil-card { 
             background: var(--card); padding: 40px; border-radius: 25px; border: 1px solid #30363d; 
-            text-align: center; width: 350px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); position: relative;
+            text-align: center; width: 380px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); position: relative;
         }
-        .avatar-box { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; }
-        .avatar { 
-            width: 100%; height: 100%; background: linear-gradient(45deg, var(--primary), #0055ff); 
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            font-size: 4rem; border: 4px solid var(--gold); box-shadow: 0 0 20px rgba(255, 207, 64, 0.3);
+        
+        /* Foto e Coroa */
+        .avatar-box { position: relative; width: 130px; height: 130px; margin: 0 auto 20px; }
+        #imgPerfil { 
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+            border: 4px solid var(--primary); background: #0d1117;
         }
-        .coroa-icon { position: absolute; top: -25px; right: -10px; font-size: 2.5rem; transform: rotate(15deg); filter: drop-shadow(0 0 10px var(--gold)); }
-        h2 { margin: 10px 0; font-size: 2rem; letter-spacing: 1px; }
-        .cargo-tag { 
-            color: var(--gold); font-weight: bold; background: rgba(255,207,64,0.1); 
-            padding: 5px 20px; border-radius: 20px; font-size: 0.9rem; border: 1px solid var(--gold);
+        .coroa { position: absolute; top: -25px; right: -10px; font-size: 2.5rem; transform: rotate(15deg); display: none; }
+        
+        .genero-icon { font-size: 1.2rem; margin-left: 5px; }
+        h2 { margin: 10px 0; font-size: 1.8rem; }
+        .cargo { color: var(--gold); background: rgba(255,207,64,0.1); padding: 5px 15px; border-radius: 15px; font-size: 0.9rem; border: 1px solid var(--gold); }
+        
+        .bio-box { margin: 20px 0; color: #8b949e; font-style: italic; min-height: 40px; }
+        
+        /* Botões */
+        .btn-edit { background: #21262d; border: 1px solid #30363d; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin-bottom: 10px; width: 100%; }
+        .btn-voltar { color: #8b949e; cursor: pointer; text-decoration: none; font-size: 0.9rem; }
+
+        /* MODAL DE EDIÇÃO (Painelzinho que abre) */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--card); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; border: 1px solid var(--primary); }
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box; }
+        
+        /* Quadrados de Gênero */
+        .gender-select { display: flex; gap: 10px; margin: 15px 0; }
+        .gender-box { 
+            flex: 1; padding: 15px; border: 2px solid #30363d; border-radius: 12px; cursor: pointer; 
+            text-align: center; transition: 0.3s; 
         }
-        .stats { display: flex; justify-content: space-around; margin-top: 30px; border-top: 1px solid #30363d; padding-top: 20px; }
-        .stat-item b { color: var(--primary); font-size: 1.3rem; }
-        .btn-voltar { 
-            background: none; border: 1px solid #30363d; color: #8b949e; padding: 12px 25px; 
-            border-radius: 12px; cursor: pointer; margin-top: 30px; transition: 0.3s; width: 100%;
-        }
-        .btn-voltar:hover { background: #30363d; color: white; }
+        .gender-box.selected-m { border-color: var(--primary); background: rgba(0,212,255,0.1); }
+        .gender-box.selected-f { border-color: var(--pink); background: rgba(255,105,180,0.1); }
     </style>
 </head>
 <body>
+
     <div class="perfil-card">
         <div class="avatar-box">
-            <div class="avatar">👤</div>
-            <div class="coroa-icon">👑</div>
+            <img src="" id="imgPerfil" alt="Avatar">
+            <div class="coroa" id="coroaRei">👑</div>
         </div>
-        <h2 id="pNome">Carlos</h2>
-        <span class="cargo-tag" id="pCargo">Supremo Criador</span>
         
-        <div class="stats">
-            <div class="stat-item"><small>Nível</small><br><b id="pNivel">1</b></div>
-            <div class="stat-item"><small>Guilda</small><br><b>The Originals</b></div>
-        </div>
+        <h2><span id="nomeUser">...</span> <span id="sexoIcon"></span></h2>
+        <div style="margin-bottom: 15px;"><span class="cargo" id="cargoUser">Membro</span></div>
+        
+        <div class="bio-box" id="bioUser">Escreva algo sobre você no botão de editar...</div>
 
-        <button class="btn-voltar" onclick="location.href='home.html'">Voltar ao Feed</button>
+        <button class="btn-edit" onclick="abrirModal()">⚙️ Editar Perfil</button>
+        <br>
+        <a class="btn-voltar" href="home.html">Voltar para a Home</a>
+    </div>
+
+    <div class="modal" id="modalEdit">
+        <div class="modal-content">
+            <h3>Editar Perfil</h3>
+            <input type="text" id="editFoto" placeholder="Link da Foto (URL)">
+            <textarea id="editBio" rows="3" placeholder="Sua biografia..."></textarea>
+            
+            <p>Identificação de Gênero:</p>
+            <div class="gender-select">
+                <div class="gender-box" id="boxM" onclick="selectGender('M')">👨 Homem</div>
+                <div class="gender-box" id="boxF" onclick="selectGender('F')">👩 Mulher</div>
+            </div>
+
+            <button class="btn-edit" style="background: var(--primary); color: black;" onclick="salvarPerfil()">SALVAR ALTERAÇÕES</button>
+            <button class="btn-edit" onclick="fecharModal()">Cancelar</button>
+        </div>
     </div>
 
     <script>
-        // Puxa as informações que salvamos no login
-        document.getElementById('pNome').innerText = localStorage.getItem('usuarioLogado') || 'Viajante';
-        document.getElementById('pCargo').innerText = localStorage.getItem('cargo') || 'Membro';
-        
-        // Se você mudou o nível no painel de admin, ele atualiza aqui
-        const lvl = localStorage.getItem('nivelAtual') || '1';
-        document.getElementById('pNivel').innerText = lvl;
+        let generoSelecionado = "";
+
+        function abrirModal() {
+            document.getElementById('modalEdit').style.display = 'flex';
+            document.getElementById('editFoto').value = localStorage.getItem('foto') || "";
+            document.getElementById('editBio').value = localStorage.getItem('bio') || "";
+            generoSelecionado = localStorage.getItem('genero') || "";
+            atualizarQuadrados();
+        }
+
+        function fecharModal() { document.getElementById('modalEdit').style.display = 'none'; }
+
+        function selectGender(g) {
+            generoSelecionado = g;
+            atualizarQuadrados();
+        }
+
+        function atualizarQuadrados() {
+            document.getElementById('boxM').className = "gender-box " + (generoSelecionado === 'M' ? 'selected-m' : '');
+            document.getElementById('boxF').className = "gender-box " + (generoSelecionado === 'F' ? 'selected-f' : '');
+        }
+
+        function salvarPerfil() {
+            localStorage.setItem('foto', document.getElementById('editFoto').value);
+            localStorage.setItem('bio', document.getElementById('editBio').value);
+            localStorage.setItem('genero', generoSelecionado);
+            fecharModal();
+            carregarDados();
+        }
+
+        function carregarDados() {
+            const nome = localStorage.getItem('usuarioLogado') || "Usuário";
+            const cargo = localStorage.getItem('cargo') || "Membro da Guilda";
+            const foto = localStorage.getItem('foto') || "https://i.imgur.com/6VBx3io.png";
+            const bio = localStorage.getItem('bio') || "Sem biografia definida.";
+            const genero = localStorage.getItem('genero');
+
+            document.getElementById('nomeUser').innerText = nome;
+            document.getElementById('cargoUser').innerText = cargo;
+            document.getElementById('imgPerfil').src = foto;
+            document.getElementById('bioUser').innerText = bio;
+
+            // Ícone de gênero
+            const icon = document.getElementById('sexoIcon');
+            if(genero === 'M') icon.innerText = "♂️";
+            else if(genero === 'F') icon.innerText = "♀️";
+
+            // Se for o Carlos (Admin), mostra a coroa
+            if(nome.toLowerCase() === 'carlos' || cargo.includes('👑')) {
+                document.getElementById('coroaRei').style.display = 'block';
+            }
+        }
+
+        carregarDados();
     </script>
 </body>
 </html>
