@@ -3,79 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Null Point - Perfil Owner</title>
+    <title>Ponto Zero - Admin</title>
     <style>
-        :root { --primary: #00d4ff; --owner: #ffcf40; --bg: #0a0e14; --card: #161b22; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; min-height: 100vh; }
-        
-        /* SIDEBAR */
-        .sidebar { width: 250px; background: #0d1117; border-right: 1px solid #30363d; padding: 30px 20px; }
-        .logo-small { font-weight: 900; margin-bottom: 50px; }
-        .logo-small span { color: var(--primary); }
-        .sidebar nav a { display: block; color: #8b949e; text-decoration: none; padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; }
-        .sidebar nav a.active { background: #21262d; color: white; }
-
-        /* ÁREA PRINCIPAL */
-        .profile-main { flex: 1; padding: 40px; }
-        .cover-photo { height: 150px; background: linear-gradient(45deg, #1a202c, var(--primary)); border-radius: 20px; }
-        .user-info { display: flex; align-items: flex-end; gap: 20px; margin-top: -50px; padding-left: 40px; }
-        .avatar { width: 100px; height: 100px; background: #30363d; border-radius: 20px; border: 5px solid var(--bg); }
-        .badge-owner { background: var(--owner); color: black; font-size: 0.6rem; padding: 4px 10px; border-radius: 5px; font-weight: bold; }
-
-        /* CARDS DE STATUS */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
-        .stat-card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #30363d; }
-        .lvl-num { font-size: 2.5rem; font-weight: bold; color: var(--primary); }
-        .bar { height: 8px; background: #30363d; border-radius: 10px; margin-top: 10px; overflow: hidden; }
-        .fill { height: 100%; background: var(--primary); width: 85%; }
-
-        /* PAINEL DE AÇÕES */
-        .admin-panel { margin-top: 40px; background: rgba(255, 207, 64, 0.05); padding: 20px; border-radius: 15px; border: 1px dashed var(--owner); }
-        .action-btn { padding: 10px 20px; border-radius: 8px; border: none; background: #238636; color: white; font-weight: bold; cursor: pointer; margin-right: 10px; }
+        :root { --primary: #00d4ff; --owner: #ffcf40; --bg: #0a0e14; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; animation: slideIn 0.5s ease; }
+        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+        .sidebar { width: 200px; height: 100vh; background: #0d1117; border-right: 1px solid #30363d; padding: 20px; }
+        .main { flex: 1; padding: 40px; }
+        .badge { background: var(--owner); color: black; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.7rem; }
+        .xp-bar { height: 20px; background: #30363d; border-radius: 10px; margin-top: 20px; position: relative; overflow: hidden; }
+        .xp-fill { height: 100%; background: var(--primary); width: 0%; transition: 2s width; }
+        button { background: var(--primary); border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="logo-small">NULL <span>POINT</span></div>
-        <nav>
-            <a href="home.html">Voltar ao Portal</a>
-            <a href="#" class="active">Meu Perfil</a>
-            <a href="#">Gerenciar Posts</a>
-            <a href="#">Usuários</a>
-        </nav>
-    </aside>
-
-    <main class="profile-main">
-        <div class="cover-photo"></div>
-        <div class="user-info">
-            <div class="avatar"></div>
-            <div>
-                <h1 style="margin:0;">Seu Nome <span class="badge-owner">OWNER</span></h1>
-                <p style="color:#8b949e; margin:5px 0;">@o_criador_do_ponto_zero</p>
-            </div>
-        </div>
-
-        <section class="stats-grid">
-            <div class="stat-card">
-                <p>Nível da Guilda</p>
-                <div class="lvl-num">99</div>
-                <div class="bar"><div class="fill"></div></div>
-            </div>
-            <div class="stat-card">
-                <p>Notícias Postadas</p>
-                <div class="lvl-num" style="color:white">124</div>
-            </div>
-            <div class="stat-card">
-                <p>Reputação</p>
-                <div class="lvl-num" style="color:white">Exaltado</div>
-            </div>
-        </section>
-
-        <section class="admin-panel">
-            <h3 style="color: var(--owner); margin-top: 0;">Painel de Autoridade</h3>
-            <button class="action-btn">Criar Notícia</button>
-            <button class="action-btn" style="background:#30363d">Banir Usuário</button>
-        </section>
-    </main>
+    <div class="sidebar">
+        <h3>CONTROLE</h3>
+        <p onclick="location.href='home.html'" style="cursor:pointer">🏠 Home</p>
+        <p onclick="location.href='index.html'" style="color:red; cursor:pointer">🚪 Sair</p>
+    </div>
+    <div class="main">
+        <h1>Painel do Criador <span class="badge">OWNER</span></h1>
+        <p>Nível da Guilda: <span id="lvl">1</span></p>
+        <div class="xp-bar"><div class="xp-fill" id="fill"></div></div>
+        <button onclick="subirNivel()">GERAR EXPERIÊNCIA</button>
+    </div>
+    <script>
+        if(localStorage.getItem('usuarioLogado') !== 'OWNER') {
+            alert("ACESSO NEGADO!"); window.location.href = 'index.html';
+        }
+        function subirNivel() {
+            document.getElementById('fill').style.width = "100%";
+            setTimeout(() => { 
+                document.getElementById('lvl').innerText = "99";
+                alert("NÍVEL MÁXIMO ATINGIDO!");
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
