@@ -3,41 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ponto Zero - Admin</title>
+    <title>Ponto Zero - Trono do Criador</title>
     <style>
-        :root { --primary: #00d4ff; --owner: #ffcf40; --bg: #0a0e14; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; animation: slideIn 0.5s ease; }
+        :root { --primary: #00d4ff; --owner: #ffcf40; --bg: #0a0e14; --card: #161b22; --danger: #f85149; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; animation: slideIn 0.5s ease; min-height: 100vh; }
         @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
-        .sidebar { width: 200px; height: 100vh; background: #0d1117; border-right: 1px solid #30363d; padding: 20px; }
+        
+        /* SIDEBAR */
+        .sidebar { width: 220px; background: #0d1117; border-right: 1px solid #30363d; padding: 30px 20px; display: flex; flex-direction: column; gap: 15px; }
+        .logo-small { font-weight: 900; font-size: 1.2rem; margin-bottom: 30px; text-align: center; }
+        .logo-small span { color: var(--primary); }
+        .nav-link { color: #8b949e; text-decoration: none; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .nav-link:hover { background: #21262d; color: white; }
+        
+        /* ÁREA PRINCIPAL */
         .main { flex: 1; padding: 40px; }
-        .badge { background: var(--owner); color: black; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.7rem; }
-        .xp-bar { height: 20px; background: #30363d; border-radius: 10px; margin-top: 20px; position: relative; overflow: hidden; }
-        .xp-fill { height: 100%; background: var(--primary); width: 0%; transition: 2s width; }
-        button { background: var(--primary); border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .badge { background: var(--owner); color: black; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; vertical-align: middle; }
+        
+        /* CARDS */
+        .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
+        .card { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #30363d; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .card h3 { margin-top: 0; color: var(--primary); }
+        
+        /* CONTROLE DE XP */
+        .xp-group { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
+        input[type="number"] { width: 80px; padding: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; text-align: center; font-size: 1.1rem; }
+        .xp-bar { height: 12px; background: #30363d; border-radius: 10px; overflow: hidden; margin-top: 10px; border: 1px solid #000; }
+        .xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #b0efff); width: 1%; transition: 1.5s width cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(0,212,255,0.5); }
+        
+        /* BOTÕES */
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 0.9rem; }
+        .btn-primary { background: var(--primary); color: black; }
+        .btn-primary:hover { box-shadow: 0 0 15px rgba(0,212,255,0.4); transform: translateY(-2px); }
+        .btn-danger { background: none; border: 1px solid var(--danger); color: var(--danger); margin-right: 10px; }
+        .btn-danger:hover { background: var(--danger); color: white; }
+        .btn-promote { background: none; border: 1px solid var(--owner); color: var(--owner); }
+        .btn-promote:hover { background: var(--owner); color: black; }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h3>CONTROLE</h3>
-        <p onclick="location.href='home.html'" style="cursor:pointer">🏠 Home</p>
-        <p onclick="location.href='index.html'" style="color:red; cursor:pointer">🚪 Sair</p>
-    </div>
-    <div class="main">
-        <h1>Painel do Criador <span class="badge">OWNER</span></h1>
-        <p>Nível da Guilda: <span id="lvl">1</span></p>
-        <div class="xp-bar"><div class="xp-fill" id="fill"></div></div>
-        <button onclick="subirNivel()">GERAR EXPERIÊNCIA</button>
-    </div>
+    <aside class="sidebar">
+        <div class="logo-small">THE NULL <span>POINT</span></div>
+        <div class="nav-link" onclick="location.href='home.html'">🏠 Home Notícias</div>
+        <div class="nav-link" style="background: #21262d; color: white;">⚙️ Painel Owner</div>
+        <div style="margin-top: auto;">
+            <div class="nav-link" onclick="logout()" style="color: var(--danger); border: 1px solid #30363d;">🚪 Sair da Sessão</div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <h1>Centro de Comando <span class="badge">SUPREMO OWNER</span></h1>
+        <p style="color: #8b949e;">Acesso concedido apenas ao Criador do Ponto Zero.</p>
+
+        <section class="control-grid">
+            <div class="card">
+                <h3>Nível da Guilda</h3>
+                <div class="xp-group">
+                    <label>Definir Nível (1-99):</label>
+                    <input type="number" id="xpInput" min="1" max="99" value="1">
+                    <button class="btn btn-primary" onclick="definirNivel()">APLICAR XP</button>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #8b949e;">
+                    <span>Atual: Nível <strong id="lvlText" style="color: white;">1</strong></span>
+                    <span>Progresso para 100</span>
+                </div>
+                <div class="xp-bar"><div class="xp-fill" id="fill"></div></div>
+            </div>
+
+            <div class="card" style="border-color: #30363d; background: rgba(248, 81, 73, 0.03);">
+                <h3 style="color: var(--danger);">Painel de Autoridade</h3>
+                <p style="color: #8b949e;">Gerenciamento de membros da Guilda (Simulação - Requer Banco).</p>
+                <div style="margin-bottom: 10px;">
+                    <input type="text" id="targetUser" placeholder="Usuário Alvo (ex: zCarlos)" style="padding:10px; background:#0d1117; border:1px solid #30363d; border-radius:8px; color:white; width: 70%;">
+                </div>
+                <button class="btn btn-danger" onclick="simularAcao('Banir')">BANIR</button>
+                <button class="btn btn-danger" style="border-color: #ff9e00; color: #ff9e00;" onclick="simularAcao('Mutar')">MUTAR</button>
+                <button class="btn btn-promote" onclick="simularAcao('Promover a Admin')">PROMOVER</button>
+            </div>
+        </section>
+    </main>
+
     <script>
+        // Proteção de Acesso
         if(localStorage.getItem('usuarioLogado') !== 'OWNER') {
-            alert("ACESSO NEGADO!"); window.location.href = 'index.html';
+            alert("SISTEMA: ACESSO NEGADO! Retornando ao Login.");
+            window.location.href = 'index.html';
         }
-        function subirNivel() {
-            document.getElementById('fill').style.width = "100%";
-            setTimeout(() => { 
-                document.getElementById('lvl').innerText = "99";
-                alert("NÍVEL MÁXIMO ATINGIDO!");
-            }, 2000);
+
+        function logout() {
+            localStorage.removeItem('usuarioLogado');
+            window.location.href = 'index.html';
+        }
+
+        // Função de XP Preciso
+        function definirNivel() {
+            let nivel = parseInt(document.getElementById('xpInput').value);
+            if (nivel < 1) nivel = 1;
+            if (nivel > 99) nivel = 99;
+            
+            // Corrige o input se o user digitar errado
+            document.getElementById('xpInput').value = nivel;
+            
+            const fill = document.getElementById('fill');
+            const lvlText = document.getElementById('lvlText');
+            
+            // O cálculo da largura: (nível / 100) * 100 (para dar %)
+            fill.style.width = nivel + "%";
+            lvlText.innerText = nivel;
+            
+            if(nivel === 99) {
+                setTimeout(() => alert("PODER MÁXIMO ATINGIDO!"), 1600);
+            }
+        }
+
+        // Função de Simulação de Poderes
+        function simularAcao(acao) {
+            const user = document.getElementById('targetUser').value || 'Membro Desconhecido';
+            const data = new Date().toLocaleString();
+            
+            let msg = `[AUTORIDADE] Ação: ${acao}\nAlvo: ${user}\nData: ${data}\n\nNota: Esta ação é visual e requer integração com Banco de Dados para funcionar de verdade.`;
+            alert(msg);
+            console.log(msg); // Registra no console para "provas"
         }
     </script>
 </body>
