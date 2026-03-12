@@ -5,69 +5,168 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Admin - The Null Point</title>
     <style>
-        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --sidebar: #0d1117; --danger: #f85149; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; height: 100vh; }
-        .sidebar { width: 250px; background: var(--sidebar); border-right: 1px solid #30363d; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .nav-box { background: #21262d; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; }
-        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
-        .card { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #30363d; margin-bottom: 25px; }
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --sidebar: #0d1117; --danger: #f85149; --success: #238636; --gold: #ffcf40; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Switch Bonitão */
-        .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        /* BARRA LATERAL */
+        .sidebar { width: 250px; background: var(--sidebar); border-right: 1px solid #30363d; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .logo { font-weight: 900; font-size: 1.2rem; margin-bottom: 30px; text-align: center; color: var(--primary); text-transform: uppercase; }
+        .nav-box { background: #21262d; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; border: 1px solid transparent; }
+        .nav-box:hover { background: #30363d; border-color: var(--primary); }
+
+        /* CONTEÚDO */
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #30363d; margin-bottom: 25px; }
+        h1 { font-size: 2rem; margin-bottom: 30px; }
+        h3 { margin-top: 0; color: var(--primary); }
+
+        input { width: 100%; padding: 12px; margin-top: 10px; background: #0d1117; border: 1px solid #333; border-radius: 8px; color: white; box-sizing: border-box; }
+        
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.3s; }
+        .btn-ban { background: var(--danger); color: white; }
+        .btn-mod { background: var(--success); color: white; }
+        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
+
+        /* Switch do Ranking */
+        .switch-container { display: flex; justify-content: space-between; align-items: center; background: rgba(0,212,255,0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(0,212,255,0.2); }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(26px); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #333; font-size: 0.9rem; }
+        .badge-mod { background: var(--success); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
+
     <aside class="sidebar">
-        <h3>CONTROLE TOTAL</h3>
+        <div class="logo">THE NULL POINT</div>
         <div class="nav-box" onclick="location.href='home.html'">🏠 Voltar ao Site</div>
-        <div class="nav-box" onclick="location.href='ranking.html'">📈 Ver Ranking</div>
+        <div class="nav-box" onclick="location.href='perfil.html'">👤 Meu Perfil</div>
+        <div class="nav-box" onclick="location.href='guildas.html'">🛡️ Guildas</div>
+        <div class="nav-box" onclick="location.href='ranking.html'">📈 Ranking</div>
+        <div class="nav-box" style="margin-top: auto; color: var(--danger);" onclick="localStorage.removeItem('usuarioLogado'); location.href='index.html'">🚪 Sair</div>
     </aside>
 
     <main class="main-content">
-        <h1>Painel do Criador 👑</h1>
+        <h1>Painel de Controle Supremo 👑</h1>
 
-        <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h3>Modo Global (Ranking)</h3>
-                <p style="color: #8b949e; margin: 0;">Se ligado, você aparece no Top Global com seu XP real.</p>
+        <div class="card">
+            <h3>Visibilidade no Ranking</h3>
+            <div class="switch-container">
+                <span>Aparecer no Top Global (XP Real)</span>
+                <label class="switch">
+                    <input type="checkbox" id="checkRanking" onchange="toggleRanking()">
+                    <span class="slider"></span>
+                </label>
             </div>
-            <label class="switch">
-                <input type="checkbox" id="checkRanking" onchange="toggleRanking()">
-                <span class="slider"></span>
-            </label>
         </div>
 
         <div class="card">
             <h3>Martelo do Ban 🔨</h3>
-            <input type="text" id="userToBan" placeholder="Nome do usuário..." style="width:80%; padding:10px; background:#0d1117; border:1px solid #333; color:white; border-radius:8px;">
-            <button onclick="banir()" style="padding:10px; background:var(--danger); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">BANIR</button>
+            <p style="color: #8b949e; font-size: 0.9rem;">O usuário banido será impedido de logar e verá a página de acesso negado.</p>
+            <input type="text" id="userToBan" placeholder="Nome exato do usuário...">
+            <button class="btn btn-ban" onclick="aplicarBan()">APLICAR BANIMENTO PERMANENTE</button>
+            
+            <div style="margin-top: 20px;">
+                <small style="color: var(--danger);">USUÁRIOS BANIDOS:</small>
+                <div id="listaBanidos"></div>
+            </div>
         </div>
+
+        <div class="card">
+            <h3>Promover Moderadores 🛡️</h3>
+            <p style="color: #8b949e; font-size: 0.9rem;">Moderadores podem acessar uma versão limitada deste painel para ajudar no controle.</p>
+            <input type="text" id="userToMod" placeholder="Nome do futuro ajudante...">
+            <button class="btn btn-mod" onclick="promoverMod()">CONCEDER PODERES DE MOD</button>
+            
+            <div style="margin-top: 20px;">
+                <small style="color: var(--success);">EQUIPE DE MODERAÇÃO:</small>
+                <div id="listaMods"></div>
+            </div>
+        </div>
+
     </main>
 
     <script>
-        // Salva a preferência de aparecer ou não no Ranking
+        // 1. LÓGICA DO RANKING
         function toggleRanking() {
             const status = document.getElementById('checkRanking').checked;
             localStorage.setItem('mostrarCriadorNoRanking', status);
-            alert(status ? "Você agora está visível no Ranking!" : "Você saiu do Ranking Global.");
         }
-
-        // Carrega o estado atual ao abrir o painel
         document.getElementById('checkRanking').checked = localStorage.getItem('mostrarCriadorNoRanking') === 'true';
 
-        function banir() {
-            const user = document.getElementById('userToBan').value;
+        // 2. LÓGICA DE BANIMENTO
+        function aplicarBan() {
+            const user = document.getElementById('userToBan').value.trim();
             if(!user) return;
+            if(user.toLowerCase() === 'carlos') return alert("O Supremo Criador não pode ser banido!");
+
             let banidos = JSON.parse(localStorage.getItem('banidos')) || [];
-            banidos.push(user);
-            localStorage.setItem('banidos', JSON.stringify(banidos));
-            alert("Mandado para o vácuo!");
+            if(!banidos.includes(user)) {
+                banidos.push(user);
+                localStorage.setItem('banidos', JSON.stringify(banidos));
+                document.getElementById('userToBan').value = "";
+                renderBanidos();
+            }
         }
+
+        function renderBanidos() {
+            const container = document.getElementById('listaBanidos');
+            const banidos = JSON.parse(localStorage.getItem('banidos')) || [];
+            container.innerHTML = banidos.map((u, i) => `
+                <div class="list-item">
+                    <span>🚫 ${u}</span>
+                    <button onclick="removerBan(${i})" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:0.7rem;">[DESBANIR]</button>
+                </div>
+            `).join('');
+        }
+
+        function removerBan(i) {
+            let banidos = JSON.parse(localStorage.getItem('banidos'));
+            banidos.splice(i, 1);
+            localStorage.setItem('banidos', JSON.stringify(banidos));
+            renderBanidos();
+        }
+
+        // 3. LÓGICA DE MODERADORES
+        function promoverMod() {
+            const user = document.getElementById('userToMod').value.trim();
+            if(!user) return;
+
+            let mods = JSON.parse(localStorage.getItem('mods')) || [];
+            if(!mods.includes(user.toLowerCase())) {
+                mods.push(user.toLowerCase());
+                localStorage.setItem('mods', JSON.stringify(mods));
+                document.getElementById('userToMod').value = "";
+                renderMods();
+            }
+        }
+
+        function renderMods() {
+            const container = document.getElementById('listaMods');
+            const mods = JSON.parse(localStorage.getItem('mods')) || [];
+            container.innerHTML = mods.map((m, i) => `
+                <div class="list-item">
+                    <span>🛡️ ${m} <span class="badge-mod">MOD</span></span>
+                    <button onclick="removerMod(${i})" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.7rem;">[REMOVER]</button>
+                </div>
+            `).join('');
+        }
+
+        function removerMod(i) {
+            let mods = JSON.parse(localStorage.getItem('mods'));
+            mods.splice(i, 1);
+            localStorage.setItem('mods', JSON.stringify(mods));
+            renderMods();
+        }
+
+        // Inicia as listas
+        renderBanidos();
+        renderMods();
     </script>
 </body>
 </html>
