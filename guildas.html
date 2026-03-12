@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guildas & Chat - The Null Point</title>
+    <style>
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --sidebar: #0d1117; --gold: #ffcf40; --success: #238636; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        .sidebar { width: 250px; background: var(--sidebar); border-right: 1px solid #30363d; display: flex; flex-direction: column; padding: 20px; gap: 10px; }
+        .nav-box { background: #21262d; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        .nav-box:hover { background: #30363d; border-color: var(--primary); }
+        .nav-box.active { border-color: var(--primary); background: rgba(0, 212, 255, 0.1); border: 1px solid var(--primary); }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; }
+        .content-area { flex: 1; overflow-y: auto; padding: 40px; }
+
+        /* GRID DE GUILDAS */
+        .grid-guildas { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .guild-card { background: var(--card); border: 1px solid #30363d; padding: 20px; border-radius: 20px; transition: 0.3s; cursor: pointer; }
+        .guild-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .guild-card.locked { opacity: 0.6; cursor: not-allowed; filter: grayscale(1); }
+        
+        /* CHAT DA GUILDA */
+        .chat-section { height: 300px; background: #0d1117; border-top: 2px solid var(--primary); display: flex; flex-direction: column; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; font-size: 0.9rem; }
+        .chat-input-area { padding: 10px; display: flex; gap: 10px; background: #161b22; }
+        .chat-input-area input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #0d1117; color: white; }
+        .msg { margin-bottom: 8px; }
+        .msg b { color: var(--primary); }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center; }
+        .modal-content { background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid var(--primary); width: 380px; }
+        .req-alert { color: #f85149; font-size: 0.8rem; margin-top: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo" style="color:var(--primary); font-weight:900; text-align:center; margin-bottom:20px;">THE NULL POINT</div>
+        <div class="nav-box" onclick="location.href='home.html'">🏠 Feed Global</div>
+        <div class="nav-box" onclick="location.href='perfil.html'">👤 Meu Perfil</div>
+        <div class="nav-box active">🛡️ Guildas</div>
+        <div class="nav-box" onclick="location.href='ranking.html'">📈 Ranking</div>
+        <div class="nav-box" onclick="location.href='admin.html'">👑 Admin</div>
+    </aside>
+
+    <main class="main-content">
+        <div class="content-area">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                <h1>Facções Disponíveis</h1>
+                <button onclick="checarNivel()" style="background:var(--primary); border:none; padding:12px 20px; border-radius:10px; font-weight:bold; cursor:pointer;">+ Fundar Guilda (Lvl 15)</button>
+            </div>
+
+            <div class="grid-guildas" id="listaGuildas"></div>
+        </div>
+
+        <div class="chat-section">
+            <div style="padding: 5px 15px; background: #1c2128; font-size: 0.8rem; color: var(--gold);">💬 CHAT DA GUILDA: <span id="nomeChat">Nenhuma selecionada</span></div>
+            <div class="chat-messages" id="chatBox">
+                <div class="msg"><i>Selecione uma guilda para ler as mensagens...</i></div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="msgInput" placeholder="Digite uma mensagem para a guilda...">
+                <button onclick="enviarMsg()" style="background:var(--primary); border:none; padding:0 15px; border-radius:8px; font-weight:bold;">ENVIAR</button>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal" id="modalG">
+        <div class="modal-content">
+            <h3>Fundar Nova Guilda</h3>
+            <p style="font-size: 0.8rem; color:#8b949e;">Você atingiu o <b>Nível 15</b>. Escolha o nome da sua dinastia.</p>
+            <input type="text" id="gNome" placeholder="Nome da Guilda">
+            <textarea id="gDesc" placeholder="Descrição ou Lema..."></textarea>
+            <button onclick="confirmarCriacao()" style="width:100%; background:var(--primary); padding:12px; border:none; border-radius:8px; font-weight:bold;">CRIAR GUILDA</button>
+            <button onclick="document.getElementById('modalG').style.display='none'" style="width:100%; margin-top:10px; background:#333; color:white; border:none; padding:10px; border-radius:8px;">Cancelar</button>
+        </div>
+    </div>
+
+    <script>
+        // Simulação de Nível (No futuro você pode salvar o nível real no LocalStorage)
+        const meuNivel = localStorage.getItem('usuarioLogado').toLowerCase() === 'carlos' ? 99 : 5; 
+
+        function checarNivel() {
+            if(meuNivel >= 15) {
+                document.getElementById('modalG').style.display = 'flex';
+            } else {
+                alert("❌ REQUISITO NÃO ATENDIDO: Você precisa ser Nível 15 para fundar uma guilda. Seu nível atual: " + meuNivel);
+            }
+        }
+
+        const guildas = [
+            { nome: "The Originals", desc: "A elite do Ponto Zero.", lider: "Carlos", gold: true },
+            { nome: "Hacker Society", desc: "Silenciosos e letais.", lider: "Nicolas", gold: false }
+        ];
+
+        function render() {
+            const container = document.getElementById('listaGuildas');
+            container.innerHTML = guildas.map(g => `
+                <div class="guild-card" onclick="entrarChat('${g.nome}')" style="${g.gold ? 'border-color:var(--gold)' : ''}">
+                    <b style="font-size:1.2rem;">${g.nome}</b> ${g.gold ? '⭐' : ''}
+                    <p style="font-size:0.8rem; color:#8b949e;">${g.desc}</p>
+                    <small>Líder: <b>${g.lider}</b></small>
+                </div>
+            `).join('');
+        }
+
+        function entrarChat(nome) {
+            document.getElementById('nomeChat').innerText = nome;
+            document.getElementById('chatBox').innerHTML = `<div class="msg"><b>[SISTEMA]:</b> Você entrou no canal de voz e texto da <b>${nome}</b>.</div>`;
+        }
+
+        function enviarMsg() {
+            const txt = document.getElementById('msgInput').value;
+            const chat = document.getElementById('chatBox');
+            const user = localStorage.getItem('usuarioLogado') || "Membro";
+            if(!txt) return;
+            chat.innerHTML += `<div class="msg"><b>${user}:</b> ${txt}</div>`;
+            document.getElementById('msgInput').value = "";
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function confirmarCriacao() {
+            const nome = document.getElementById('gNome').value;
+            if(nome) {
+                guildas.push({ nome, desc: document.getElementById('gDesc').value, lider: "Você", gold: false });
+                render();
+                document.getElementById('modalG').style.display = 'none';
+                alert("⚔️ Guilda " + nome + " fundada com sucesso!");
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>
