@@ -8,7 +8,7 @@
         :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --sidebar: #0d1117; --gold: #ffcf40; }
         body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* BARRA LATERAL (O desenho que você fez) */
+        /* BARRA LATERAL (Design Carlos) */
         .sidebar { width: 250px; background: var(--sidebar); border-right: 1px solid #30363d; display: flex; flex-direction: column; padding: 20px; gap: 10px; }
         .logo { font-weight: 900; font-size: 1.2rem; margin-bottom: 30px; text-align: center; color: var(--primary); }
         .nav-box { background: #21262d; padding: 15px; border-radius: 12px; cursor: pointer; border: 1px solid transparent; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
@@ -24,13 +24,15 @@
         .layout-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; max-width: 1100px; margin: 0 auto; }
         .search-bar { width: 100%; padding: 15px; background: var(--card); border: 1px solid #30363d; border-radius: 12px; color: white; margin-bottom: 20px; box-sizing: border-box; }
         
-        .news-card { background: var(--card); border-radius: 15px; border: 1px solid #30363d; margin-bottom: 20px; overflow: hidden; }
-        .news-img { width: 100%; height: 200px; object-fit: cover; background: #000; display: none; } /* Escondido se não tiver foto */
+        /* Cards de Notícias com Foto */
+        .news-card { background: var(--card); border-radius: 15px; border: 1px solid #30363d; margin-bottom: 20px; overflow: hidden; position: relative; }
+        .news-img { width: 100%; height: 220px; object-fit: cover; background: #000; }
         .news-body { padding: 20px; }
         .news-card h2 { color: var(--primary); margin: 5px 0; }
-        .pinned { border-color: var(--gold); position: relative; }
-        .pinned::before { content: "📌 FIXADO"; position: absolute; top: 10px; right: 10px; color: var(--gold); font-size: 0.7rem; font-weight: bold; }
+        .pinned { border: 2px solid var(--gold); }
+        .pinned-tag { position: absolute; top: 10px; left: 10px; background: var(--gold); color: black; padding: 2px 10px; border-radius: 5px; font-weight: bold; font-size: 0.7rem; }
 
+        /* Card da Guilda na Direita */
         .guild-card { background: var(--sidebar); padding: 20px; border-radius: 15px; border: 1px solid var(--gold); height: fit-content; }
         .btn-entrar { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--primary); color: var(--primary); border-radius: 8px; cursor: not-allowed; margin-top: 15px; }
     </style>
@@ -41,8 +43,9 @@
         <div class="logo">THE NULL POINT</div>
         <div class="nav-box active" onclick="location.href='home.html'">🏠 Feed Global</div>
         <div class="nav-box" onclick="location.href='perfil.html'">👤 Meu Perfil</div>
-        <div class="nav-box" onclick="alert('Em breve!')">🛡️ Guildas</div>
-        <div class="nav-box" onclick="alert('Ranking em 1 min...')">📈 Top Ranking</div>
+        <div class="nav-box" onclick="location.href='amigos.html'">👥 Amigos</div>
+        <div class="nav-box" onclick="alert('Sistema de Guildas em desenvolvimento!')">🛡️ Guildas</div>
+        <div class="nav-box" onclick="location.href='ranking.html'">📈 Top Ranking</div>
         <div class="nav-box" onclick="alert('Configurações')">⚙️ Ajustes</div>
         <div class="nav-box" style="margin-top: auto; color: #f85149;" onclick="localStorage.clear(); location.href='index.html'">🚪 Sair</div>
     </aside>
@@ -74,13 +77,14 @@
     </main>
 
     <script>
+        // Carrega o nome do Carlos (ou outro usuário)
         document.getElementById('txtUser').innerText = "Olá, " + (localStorage.getItem('usuarioLogado') || 'Viajante');
 
         function renderizar(filtro = "") {
             const feed = document.getElementById('feed');
             const lista = JSON.parse(localStorage.getItem('noticias')) || [];
             
-            // Filtro e Ordenação (Fixados primeiro)
+            // Filtra as notícias pelo título
             const filtradas = lista.filter(n => n.titulo.toLowerCase().includes(filtro.toLowerCase()));
 
             if(filtradas.length === 0) {
@@ -88,9 +92,11 @@
                 return;
             }
 
+            // Gera os cards (com foto e suporte a fixado)
             feed.innerHTML = filtradas.map(n => `
                 <div class="news-card ${n.fixada ? 'pinned' : ''}">
-                    ${n.imagem ? `<img src="${n.imagem}" class="news-img" style="display:block">` : ''}
+                    ${n.fixada ? '<div class="pinned-tag">📌 FIXADO</div>' : ''}
+                    ${n.imagem ? `<img src="${n.imagem}" class="news-img">` : ''}
                     <div class="news-body">
                         <small style="color:#8b949e;">${n.data}</small>
                         <h2>${n.titulo}</h2>
@@ -99,6 +105,8 @@
                 </div>
             `).join('');
         }
+        
+        // Inicia o feed
         renderizar();
     </script>
 </body>
