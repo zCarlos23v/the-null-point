@@ -3,76 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Martelo do Ban</title>
+    <title>Painel Admin - The Null Point</title>
     <style>
-        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --danger: #f85149; --sidebar: #0d1117; }
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --sidebar: #0d1117; --danger: #f85149; }
         body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; height: 100vh; }
         .sidebar { width: 250px; background: var(--sidebar); border-right: 1px solid #30363d; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
         .nav-box { background: #21262d; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; }
-        .nav-box:hover { background: #30363d; }
         .main-content { flex: 1; padding: 40px; overflow-y: auto; }
         .card { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #30363d; margin-bottom: 25px; }
-        input { width: 100%; padding: 12px; margin-top: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: white; box-sizing: border-box; }
-        .btn-ban { background: var(--danger); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; }
+        
+        /* Switch Bonitão */
+        .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(26px); }
     </style>
 </head>
 <body>
     <aside class="sidebar">
-        <h3>THE NULL POINT</h3>
+        <h3>CONTROLE TOTAL</h3>
         <div class="nav-box" onclick="location.href='home.html'">🏠 Voltar ao Site</div>
-        <div class="nav-box" style="margin-top: auto; color: var(--danger);" onclick="localStorage.clear(); location.href='index.html'">🚪 Sair</div>
+        <div class="nav-box" onclick="location.href='ranking.html'">📈 Ver Ranking</div>
     </aside>
 
     <main class="main-content">
-        <h1>Martelo do Ban 🔨</h1>
-        <div class="card">
-            <h3>Banir Usuário</h3>
-            <p style="color: #8b949e;">Digite o nome do usuário para expulsá-lo do universo.</p>
-            <input type="text" id="userToBan" placeholder="Nome do Usuário...">
-            <button class="btn-ban" onclick="aplicarBan()">APLICAR BANIMENTO PERMANENTE</button>
+        <h1>Painel do Criador 👑</h1>
+
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3>Modo Global (Ranking)</h3>
+                <p style="color: #8b949e; margin: 0;">Se ligado, você aparece no Top Global com seu XP real.</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="checkRanking" onchange="toggleRanking()">
+                <span class="slider"></span>
+            </label>
         </div>
 
         <div class="card">
-            <h3>Usuários na Lista Negra</h3>
-            <div id="listaNegra"></div>
+            <h3>Martelo do Ban 🔨</h3>
+            <input type="text" id="userToBan" placeholder="Nome do usuário..." style="width:80%; padding:10px; background:#0d1117; border:1px solid #333; color:white; border-radius:8px;">
+            <button onclick="banir()" style="padding:10px; background:var(--danger); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">BANIR</button>
         </div>
     </main>
 
     <script>
-        function aplicarBan() {
-            const user = document.getElementById('userToBan').value.trim();
+        // Salva a preferência de aparecer ou não no Ranking
+        function toggleRanking() {
+            const status = document.getElementById('checkRanking').checked;
+            localStorage.setItem('mostrarCriadorNoRanking', status);
+            alert(status ? "Você agora está visível no Ranking!" : "Você saiu do Ranking Global.");
+        }
+
+        // Carrega o estado atual ao abrir o painel
+        document.getElementById('checkRanking').checked = localStorage.getItem('mostrarCriadorNoRanking') === 'true';
+
+        function banir() {
+            const user = document.getElementById('userToBan').value;
             if(!user) return;
-            if(user.toLowerCase() === 'carlos') return alert("O Supremo Criador não pode ser banido!");
-
             let banidos = JSON.parse(localStorage.getItem('banidos')) || [];
-            if(!banidos.includes(user)) {
-                banidos.push(user);
-                localStorage.setItem('banidos', JSON.stringify(banidos));
-                alert("O usuário " + user + " foi mandado para o vácuo!");
-                document.getElementById('userToBan').value = "";
-                renderBanidos();
-            }
-        }
-
-        function renderBanidos() {
-            const container = document.getElementById('listaNegra');
-            const banidos = JSON.parse(localStorage.getItem('banidos')) || [];
-            container.innerHTML = banidos.map((u, i) => `
-                <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #30363d;">
-                    <span>🚫 ${u}</span>
-                    <button onclick="desbanir(${i})" style="background:gray; color:white; border:none; border-radius:5px; cursor:pointer;">Desbanir</button>
-                </div>
-            `).join('');
-        }
-
-        function desbanir(i) {
-            let banidos = JSON.parse(localStorage.getItem('banidos'));
-            banidos.splice(i, 1);
+            banidos.push(user);
             localStorage.setItem('banidos', JSON.stringify(banidos));
-            renderBanidos();
+            alert("Mandado para o vácuo!");
         }
-
-        renderBanidos();
     </script>
 </body>
 </html>
