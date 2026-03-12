@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - The Null Point</title>
+    <style>
+        :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; --gold: #ffcf40; }
+        body { background: var(--bg); color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .perfil-card { 
+            background: var(--card); padding: 40px; border-radius: 25px; border: 1px solid #30363d; 
+            text-align: center; width: 350px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); position: relative;
+        }
+        .avatar-box { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; }
+        .avatar { 
+            width: 100%; height: 100%; background: linear-gradient(45deg, var(--primary), #0055ff); 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-size: 4rem; border: 4px solid var(--gold); box-shadow: 0 0 20px rgba(255, 207, 64, 0.3);
+        }
+        .coroa-icon { position: absolute; top: -25px; right: -10px; font-size: 2.5rem; transform: rotate(15deg); filter: drop-shadow(0 0 10px var(--gold)); }
+        h2 { margin: 10px 0; font-size: 2rem; letter-spacing: 1px; }
+        .cargo-tag { 
+            color: var(--gold); font-weight: bold; background: rgba(255,207,64,0.1); 
+            padding: 5px 20px; border-radius: 20px; font-size: 0.9rem; border: 1px solid var(--gold);
+        }
+        .stats { display: flex; justify-content: space-around; margin-top: 30px; border-top: 1px solid #30363d; padding-top: 20px; }
+        .stat-item b { color: var(--primary); font-size: 1.3rem; }
+        .btn-voltar { 
+            background: none; border: 1px solid #30363d; color: #8b949e; padding: 12px 25px; 
+            border-radius: 12px; cursor: pointer; margin-top: 30px; transition: 0.3s; width: 100%;
+        }
+        .btn-voltar:hover { background: #30363d; color: white; }
+    </style>
+</head>
+<body>
+    <div class="perfil-card">
+        <div class="avatar-box">
+            <div class="avatar">👤</div>
+            <div class="coroa-icon">👑</div>
+        </div>
+        <h2 id="pNome">Carlos</h2>
+        <span class="cargo-tag" id="pCargo">Supremo Criador</span>
+        
+        <div class="stats">
+            <div class="stat-item"><small>Nível</small><br><b id="pNivel">1</b></div>
+            <div class="stat-item"><small>Guilda</small><br><b>The Originals</b></div>
+        </div>
+
+        <button class="btn-voltar" onclick="location.href='home.html'">Voltar ao Feed</button>
+    </div>
+
+    <script>
+        // Puxa as informações que salvamos no login
+        document.getElementById('pNome').innerText = localStorage.getItem('usuarioLogado') || 'Viajante';
+        document.getElementById('pCargo').innerText = localStorage.getItem('cargo') || 'Membro';
+        
+        // Se você mudou o nível no painel de admin, ele atualiza aqui
+        const lvl = localStorage.getItem('nivelAtual') || '1';
+        document.getElementById('pNivel').innerText = lvl;
+    </script>
+</body>
+</html>
