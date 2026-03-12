@@ -7,45 +7,60 @@
     <style>
         :root { --primary: #00d4ff; --bg: #0a0e14; --card: #161b22; }
         body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; }
-        .navbar { display: flex; justify-content: space-between; padding: 20px 5%; background: #0d1117; border-bottom: 1px solid #30363d; }
-        .feed { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        .news-card { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #30363d; margin-bottom: 20px; animation: slideUp 0.5s ease; }
-        @keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
-        .news-card h2 { color: var(--primary); margin-top: 0; }
-        .news-card small { color: #8b949e; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: #0d1117; border-bottom: 1px solid #30363d; }
+        .search-area { max-width: 800px; margin: 20px auto; padding: 0 20px; }
+        #searchInput { width: 100%; padding: 15px; background: #161b22; border: 1px solid #30363d; border-radius: 12px; color: white; outline: none; box-sizing: border-box; }
+        .feed { max-width: 800px; margin: 20px auto; padding: 0 20px; }
+        .news-card { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #30363d; margin-bottom: 20px; }
+        .news-card h2 { color: var(--primary); margin: 5px 0; }
+        .user-link { cursor: pointer; color: white; font-weight: bold; background: #21262d; padding: 8px 15px; border-radius: 20px; }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div style="font-weight:900;">THE NULL POINT</div>
-        <div id="userDisplay"></div>
+        <div class="user-link" onclick="location.href='perfil.html'">
+            <span id="nomeUser">...</span> 👤
+        </div>
     </nav>
 
-    <div class="feed" id="feedNoticias">
-        </div>
+    <div class="search-area">
+        <input type="text" id="searchInput" placeholder="🔍 Pesquisar no Ponto Zero..." onkeyup="filtrar()">
+    </div>
+
+    <div class="feed" id="feedNoticias"></div>
 
     <script>
-        document.getElementById('userDisplay').innerText = "Olá, " + (localStorage.getItem('usuarioLogado') || 'Viajante');
+        document.getElementById('nomeUser').innerText = "Olá, " + (localStorage.getItem('usuarioLogado') || 'Viajante');
 
-        function carregarNoticias() {
+        function exibir(filtro = "") {
             const feed = document.getElementById('feedNoticias');
             const lista = JSON.parse(localStorage.getItem('noticias')) || [];
             
-            if(lista.length === 0) {
-                feed.innerHTML = "<p style='text-align:center; color:#8b949e;'>Nenhuma notícia publicada ainda.</p>";
+            const filtradas = lista.filter(n => 
+                n.titulo.toLowerCase().includes(filtro.toLowerCase()) || 
+                n.texto.toLowerCase().includes(filtro.toLowerCase())
+            );
+
+            if(filtradas.length === 0) {
+                feed.innerHTML = "<p style='text-align:center; color:#8b949e;'>Nenhuma notícia encontrada.</p>";
                 return;
             }
 
-            feed.innerHTML = lista.map(n => `
+            feed.innerHTML = filtradas.map(n => `
                 <div class="news-card">
-                    <small>${n.data}</small>
+                    <small style="color:#8b949e;">${n.data}</small>
                     <h2>${n.titulo}</h2>
                     <p>${n.texto}</p>
                 </div>
             `).join('');
         }
 
-        carregarNoticias();
+        function filtrar() {
+            exibir(document.getElementById('searchInput').value);
+        }
+
+        exibir();
     </script>
 </body>
 </html>
